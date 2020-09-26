@@ -1,0 +1,55 @@
+In order to create a mirror:
+
+1. First go to https://github.com/FIRST-Tech-Challenge
+
+2. Be logged in as serenitynow14504@gmail.com
+
+3. Navigate to the correct repo in place in 1 above
+
+4. Fork the repo by pressing the fork button.  Choose serenitynow14504 as the place to create the fork
+
+5. The fork is public and cannot be made private.  To have it private, we need to mirror it. So create a new repo in serenitynow14504.
+if the forked repo was foo, call this foo-mirror for example. Make the mirror private.
+
+6. Add pie474 as a collaborator.  Chinmay may need to sign out of github and sign in as himself, then go to his email, and click on the
+accept button that will take him to github to accept.
+
+7. In a terminal window, clone the fork (in an appropriate directory by first cd'ing there):
+
+git clone --bare https://github.com/serenitynow14504/UltimateGoal.git
+
+(for example, using UltimateGoal.git above)
+
+8. This will create a directory UltimateGoal.git in whatever directory we are in the terminal. Do cd UltimateGoal.git
+
+9. Now push the fork into the mirror repository we created above:
+
+git push --mirror https://github.com/serenitynow14504/ultimategoal-mirror/
+
+10. After this, we can remove the clone of the fork:
+cd ..
+$ rm -rf UltimateGoal.git
+
+
+This is for rebasing from FTC Skystone (or the new one, replace with the correct directory names) repo (not our forked one)
+
+git checkout develop
+git fetch https://github.com/FIRST-Tech-Challenge/SkyStone.git
+git rebase master
+
+the first command may not be needed again since the upstream should be set to our own fork
+do the same thing for the fork first: ie, serenitynow14504/Skystone.git
+for that the upstream is set to the FTC site's master, and the remote add upstream command may not be needed
+can do any just for completeness:
+
+git remote add upstream https://github.com/FIRST-Tech-Challenge/SkyStone.git
+do the same as below to rebase it first.  then do the below to our mirror of the fork.  the mirror is there
+so that we can be private.
+it's possible to make the upstream of the mirror the FTC one directly and not bother with our fork,
+but haven't tried that.
+
+git remote add upstream https://github.com/serenitynow14504/SkyStone.git
+git fetch upstream
+git checkout master
+git rebase upstream/master
+git push
