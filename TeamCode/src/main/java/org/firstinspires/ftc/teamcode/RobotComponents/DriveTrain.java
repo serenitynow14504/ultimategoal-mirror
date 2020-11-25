@@ -1,19 +1,22 @@
 package org.firstinspires.ftc.teamcode.RobotComponents;
 
-import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.Common.PIDController;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
+import org.openftc.revextensions2.ExpansionHubMotor;
 
+import androidx.annotation.NonNull;
 
 public class DriveTrain extends Capability {
-    private DcMotor right, right2, left, left2;
+    private ExpansionHubMotor right, right2, left, left2;
+
     //so bobby asks dad, why did you name my brother sunny? Because I like the sun. Then why did you name me Bobby? Because i lIke BoBs
 
     //PIDController x = new PIDController(0.00015,0.0000004,0.0005);//d = 0.0004
@@ -38,11 +41,11 @@ public class DriveTrain extends Capability {
         interrupt = false;
     }
 
-    void init() {
-        left = parent.getMyOpMode().hardwareMap.get(DcMotor.class, "fLeft");
-        left2 = parent.getMyOpMode().hardwareMap.get(DcMotor.class, "bLeft");
-        right = parent.getMyOpMode().hardwareMap.get(DcMotor.class, "fRight");
-        right2 = parent.getMyOpMode().hardwareMap.get(DcMotor.class, "bRight");
+    void init(HardwareMap hardwareMap) {
+        left = (ExpansionHubMotor) hardwareMap.get("fLeft");
+        left2 = (ExpansionHubMotor) hardwareMap.get("bLeft");
+        right = (ExpansionHubMotor) hardwareMap.get("fRight");
+        right2 = (ExpansionHubMotor) hardwareMap.get("bRight");
 
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -98,25 +101,25 @@ public class DriveTrain extends Capability {
         return newPowers;
     }
 
-    public void setScaledPowersFromGlobalVector(@NonNull VectorF xy, double r) {
-        double robotRot = Math.toRadians(parent.getPosition().get(2));
-        VectorF localVector = new VectorF(
-                (float)(xy.get(0) * Math.cos(robotRot) - xy.get(1) * Math.sin(robotRot)),
-                (float)(xy.get(0) * Math.sin(robotRot) + xy.get(1) * Math.cos(robotRot))
+    public void setScaledPowersFromGlobalVector(@NonNull VectorD xy, double r) {
+        double robotRot = Math.toRadians(parent.getPosition().getR());
+        VectorD localVector = new VectorD(
+                (float)(xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
+                (float)(xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
         );
 
-        setScaledPowersFromComponents(localVector.get(0), localVector.get(1), r);
+        setScaledPowersFromComponents(localVector.getX(), localVector.getY(), r);
 
     }
 
-    public void setScaledPowersFromGlobalVector(@NonNull Pair<VectorF, Double> p) {
-        double robotRot = Math.toRadians(parent.getPosition().get(2));
-        VectorF localVector = new VectorF(
-                (float)(p.first.get(0) * Math.cos(robotRot) - p.first.get(1) * Math.sin(robotRot)),
-                (float)(p.first.get(0) * Math.sin(robotRot) + p.first.get(1) * Math.cos(robotRot))
+    public void setScaledPowersFromGlobalVector(@NonNull Pair<VectorD, Double> p) {
+        double robotRot = Math.toRadians(parent.getPosition().getR());
+        VectorD localVector = new VectorD(
+                (float)(p.first.getX() * Math.cos(robotRot) - p.first.getY() * Math.sin(robotRot)),
+                (float)(p.first.getX() * Math.sin(robotRot) + p.first.getY() * Math.cos(robotRot))
         );
 
-        setScaledPowersFromComponents(localVector.get(0), localVector.get(1), p.second);
+        setScaledPowersFromComponents(localVector.getX(), localVector.get(1), p.second);
 
     }
 
@@ -179,23 +182,22 @@ public class DriveTrain extends Capability {
     }
 
 
-    void teleOp(Gamepad gamepad1)
-    {
+    void teleOp(Gamepad gamepad) {
         double coefficient = 0.525;
-        if(gamepad1.a) {
+        if(gamepad.a) {
             coefficient = 0.3;
-        } else if(gamepad1.b) {
+        } else if(gamepad.b) {
             coefficient = 1;
         }
 
-        double axialPower = -gamepad1.left_stick_y * coefficient;
-        double lateralPower = gamepad1.left_stick_x * coefficient;
+        double axialPower = -gamepad.left_stick_y * coefficient;
+        double lateralPower = gamepad.left_stick_x * coefficient;
 
         double turnPower;
-        if(gamepad1.right_trigger > 0) {
-            turnPower = gamepad1.right_trigger;
-        } else if (gamepad1.left_trigger > 0) {
-            turnPower = -gamepad1.left_trigger;
+        if(gamepad.right_trigger > 0) {
+            turnPower = gamepad.right_trigger;
+        } else if (gamepad.left_trigger > 0) {
+            turnPower = -gamepad.left_trigger;
         } else {
             turnPower = 0.0;
         }
@@ -218,8 +220,7 @@ public class DriveTrain extends Capability {
         right2.setPower(parent.getFront() * br);
     }
 
-    public void rotate(int degrees, double power, int timeOutMillis)
-    {
+    public void rotate(int degrees, double power, int timeOutMillis) {
         ElapsedTime timer = new ElapsedTime();
 
         degrees *= -1;
@@ -254,11 +255,9 @@ public class DriveTrain extends Capability {
         // rotate until turn is completed.
         timer.reset();
 
-        if (degrees < 0)
-        {
+        if (degrees < 0) {
             // On right turn we have to get off zero first.
-            while (opModeIsActive() && parent.imu.getAngle() == 0)
-            {
+            while (opModeIsActive() && parent.imu.getAngle() == 0) {
                 setPowers(power, -power);
                 sleep(100);
             }
@@ -287,5 +286,13 @@ public class DriveTrain extends Capability {
         parent.setTargetRotation(degrees + parent.getTargetRotation());
         sleep(200);
         //parent.odometry.play();
+    }
+
+
+    @Override
+    public void run() {
+        while(opModeIsActive() && !isInterrupted()) {
+            //
+        }
     }
 }

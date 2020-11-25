@@ -3,27 +3,27 @@ package org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.Common.Spline;
 import org.firstinspires.ftc.teamcode.Common.Utilities;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
 
 public class SplinePath extends Path {
-    private VectorF[] controlPoints;
+    private VectorD[] controlPoints;
 
-    public SplinePath(VectorF[] points) {
+    public SplinePath(VectorD[] points) {
         super(getSplinedPoints(points));
         controlPoints = points;
 
     }
 
-    private static VectorF[] getSplinedPoints(VectorF[] points) {
+    private static VectorD[] getSplinedPoints(VectorD[] points) {
         Spline spline = new Spline(Utilities.extractXs(points), Utilities.extractYs(points));
         //spline.setPointDistance(res);
-        VectorF[] splineInterpolated = Utilities.combineXY(spline.getIntX(), spline.getIntY());
+        VectorD[] splineInterpolated = Utilities.combineXY(spline.getIntX(), spline.getIntY());
         return splineInterpolated;
     }
 
-    public VectorF[] getControlPoints() {
+    public VectorD[] getControlPoints() {
         return controlPoints;
     }
 

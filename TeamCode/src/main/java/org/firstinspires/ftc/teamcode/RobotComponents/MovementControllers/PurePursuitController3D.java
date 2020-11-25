@@ -4,10 +4,10 @@ import android.util.Pair;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.Common.Line;
 import org.firstinspires.ftc.teamcode.Common.PIDController;
 import org.firstinspires.ftc.teamcode.Common.Utilities;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Path;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
@@ -32,7 +32,7 @@ public class PurePursuitController3D extends MovementController {
 
     public void followPath(double power) {
 
-        ElapsedTime timer = new ElapsedTime();
+        timer = new ElapsedTime();
 
 
         /*PIDController rPID = new PIDController(RobotConstants.TRP, RobotConstants.TRI, RobotConstants.TRD);
@@ -51,7 +51,7 @@ public class PurePursuitController3D extends MovementController {
         double closestPathPointParameter;
         timer.reset();
         do {
-            VectorF pos = robot.getPosition();
+            VectorD pos = robot.getPosition();
 
             path.calculateClosestData(pos);
 
@@ -63,10 +63,10 @@ public class PurePursuitController3D extends MovementController {
 
             lookAhead += closestPathPointParameter;
 
-            VectorF lookAheadPoint = path.pointFromParameter(lookAhead);
-            //VectorF globalFollowVector = lookAheadPoint.subtracted(Utilities.clipToXY(pos));
-            Pair<Double, VectorF> r = turnPower(pos, lookAheadPoint, power);
-            Pair<double[], VectorF> r2 = turnPower2(pos, lookAheadPoint, power);
+            VectorD lookAheadPoint = path.pointFromParameter(lookAhead);
+            //VectorD globalFollowVector = lookAheadPoint.subtracted(Utilities.clipToXY(pos));
+            Pair<Double, VectorD> r = turnPower(pos, lookAheadPoint, power);
+            Pair<double[], VectorD> r2 = turnPower2(pos, lookAheadPoint, power);
 
 
             //Return to Path Correction
@@ -76,7 +76,7 @@ public class PurePursuitController3D extends MovementController {
 
 
             //Obstacle Repulsion Vector
-            VectorF obstacleRepel = robot.getEnvironmentRepulsionVector();
+            VectorD obstacleRepel = robot.getEnvironmentRepulsionVector();
 
 
 
@@ -119,8 +119,8 @@ public class PurePursuitController3D extends MovementController {
         setProgress(0);
     }
 
-    private Pair<Double, VectorF> turnPower(VectorF pos, VectorF point, double forwardPower) {
-        VectorF relativePoint = point.subtracted(Utilities.clipToXY(pos));
+    private Pair<Double, VectorD> turnPower(VectorD pos, VectorD point, double forwardPower) {
+        VectorD relativePoint = point.subtracted(Utilities.clipToXY(pos));
         double centralAngleRadians = Math.PI - 2d * (atan2(relativePoint.get(1),
                 relativePoint.get(0))-pos.get(2));
         double curvature;
@@ -133,11 +133,11 @@ public class PurePursuitController3D extends MovementController {
             log("radius " + radius);
         }
         Line toPoint = new Line(Utilities.clipToXY(pos), point, -1);
-        Line perp = toPoint.perpLine(Utilities.clipToXY(pos).added(point).multiplied(0.5f));
+        Line perp = toPoint.perpLine(Utilities.clipToXY(pos).added(point).multiplied(0.5));
 
         Line robotSide = new Line(Utilities.clipToXY(pos), tan(Math.toRadians(pos.get(2))));
 
-        VectorF center = perp.intersect(robotSide);
+        VectorD center = perp.intersect(robotSide);
 
 
         Line forward = new Line(Utilities.clipToXY(pos), tan(Math.toRadians(pos.get(2)) + Math.PI/2));
@@ -158,22 +158,22 @@ public class PurePursuitController3D extends MovementController {
     }
 
 
-    private Pair<double[], VectorF> turnPower2(VectorF pos, VectorF point, double forwardPower) {
-        VectorF relativePoint = point.subtracted(Utilities.clipToXY(pos));
+    private Pair<double[], VectorD> turnPower2(VectorD pos, VectorD point, double forwardPower) {
+        VectorD relativePoint = point.subtracted(Utilities.clipToXY(pos));
         double centralAngleRadians = abs(Math.PI - 2d * (atan2(relativePoint.get(1),
                 relativePoint.get(0))-pos.get(2)));
 
 
         Line toPoint = new Line(Utilities.clipToXY(pos), point, -1);
-        Line perp = toPoint.perpLine(Utilities.clipToXY(pos).added(point).multiplied(0.5f));
+        Line perp = toPoint.perpLine(Utilities.clipToXY(pos).added(point).multiplied(0.5));
 
         Line robotSide = new Line(Utilities.clipToXY(pos), tan(Math.toRadians(pos.get(2))));
 
-        VectorF center = perp.intersect(robotSide);
+        VectorD center = perp.intersect(robotSide);
 
 
         double rot = toRadians(pos.get(2));
-        VectorF forwardPoint = new VectorF(pos.get(0) + 20f * (float)cos(rot + Math.PI/2),
+        VectorD forwardPoint = new VectorD(pos.get(0) + 20f * (float)cos(rot + Math.PI/2),
                 pos.get(1) + 20f * (float)sin(rot + Math.PI/2));
         Line forward = new Line(Utilities.clipToXY(pos), forwardPoint, 0);
 

@@ -1,10 +1,5 @@
 package org.firstinspires.ftc.teamcode.RobotComponents.Constants;
 
-import org.firstinspires.ftc.teamcode.RobotComponents.Lift;
-
-import java.util.HashMap;
-
-
 public abstract class RobotConstants {
     //odometry
     public static final double ODO_ENCODER_COUNTS_PER_REV = 8192;
@@ -52,9 +47,8 @@ public abstract class RobotConstants {
     public static final float length = 18;
 
 
-    private static HashMap<Double, Lift.TASKS> SKYSTONE_LIFT_GO_TO_FOUNDATION;
 
     public enum ALLIANCES {
-        RED, BLUE
+        RED, BLUE, SOLO
     }
 }

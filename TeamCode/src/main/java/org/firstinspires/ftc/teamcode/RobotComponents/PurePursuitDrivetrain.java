@@ -1,17 +1,18 @@
 package org.firstinspires.ftc.teamcode.RobotComponents;
 
-import android.support.annotation.NonNull;
-
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.Common.PIDController;
-import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.Common.Utilities;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
+import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Path;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.RotationPath;
 
+import androidx.annotation.NonNull;
+
+@Deprecated
 public class PurePursuitDrivetrain extends DriveTrain {
     private Path path;
     private RotationPath rotationPath;
@@ -22,7 +23,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
         this.mode = mode;
     }
 
-    public void setPath(VectorF[] points) {
+    public void setPath(VectorD[] points) {
         path = new Path(points);
         if(parent.alliance == RobotConstants.ALLIANCES.BLUE) path.flipForBlue();
         if(points[1].length() == 3) {
@@ -54,7 +55,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
         double closestPathPointParameter;
         timer.reset();
         do {
-            VectorF pos;
+            VectorD pos;
             if(mode == Odometry.MODES.LINE || mode == Odometry.MODES.ARC) pos = parent.getPosition();
             else pos = parent.getEstimatedPosition();
 
@@ -66,7 +67,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
             setProgress(closestPathPointParameter/path.getPathLength());
             lookAhead += closestPathPointParameter;
 
-            VectorF pointFollow = path.pointFromParameter(lookAhead);
+            VectorD pointFollow = path.pointFromParameter(lookAhead);
 
 
             double dx = pointFollow.get(0) - pos.get(0);
@@ -138,7 +139,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
         do {
             //timer.reset();
 
-            VectorF pos;
+            VectorD pos;
             if(mode == Odometry.MODES.LINE || mode == Odometry.MODES.ARC) pos = parent.getPosition();
             else pos = parent.getEstimatedPosition();
 
@@ -150,7 +151,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
             setProgress(closestPathPointParameter/path.getPathLength());
             lookAhead += closestPathPointParameter;
 
-            VectorF pointFollow = path.pointFromParameter(lookAhead);
+            VectorD pointFollow = path.pointFromParameter(lookAhead);
 
 
             double dx = pointFollow.get(0) - pos.get(0);
@@ -231,7 +232,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
         do {
             //timer.reset();
 
-            VectorF pos;
+            VectorD pos;
             if(mode == Odometry.MODES.LINE || mode == Odometry.MODES.ARC) pos = parent.getPosition();
             else pos = parent.getEstimatedPosition();
 
@@ -243,7 +244,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
             setProgress(closestPathPointParameter/path.getPathLength());
             lookAhead += closestPathPointParameter;
 
-            VectorF pointFollow = path.pointFromParameter(lookAhead);
+            VectorD pointFollow = path.pointFromParameter(lookAhead);
 
 
             double dx = pointFollow.get(0) - pos.get(0);
@@ -298,14 +299,14 @@ public class PurePursuitDrivetrain extends DriveTrain {
 
 
 
-    public void displayDash(@NonNull VectorF position, VectorF estimatedPosition, VectorF lookAheadPoint) {
+    public void displayDash(@NonNull VectorD position, VectorD estimatedPosition, VectorD lookAheadPoint) {
         if(parent.dashboard == null) return;
         TelemetryPacket packet = new TelemetryPacket();
 
         double cornerRad = Math.sqrt(parent.getWidth()*parent.getWidth()/4 + parent.getLength()*parent.getLength()/4);
 
         if(lookAheadPoint != null) {
-            VectorF pos = position;
+            VectorD pos = position;
             if(estimatedPosition != null) pos = estimatedPosition;
 
             packet.fieldOverlay().setStrokeWidth(1).setStroke("black").strokePolyline(path.getXs(), path.getYs());

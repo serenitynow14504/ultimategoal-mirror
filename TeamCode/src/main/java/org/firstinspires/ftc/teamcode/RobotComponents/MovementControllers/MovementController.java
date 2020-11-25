@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.RobotComponents.MovementControllers;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Path;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
@@ -7,6 +9,7 @@ public abstract class MovementController {
     protected Path path;
     protected Robot robot;
     protected double progress;
+    protected ElapsedTime timer;
 
     MovementController(Robot r, Path p) {
         path = p;

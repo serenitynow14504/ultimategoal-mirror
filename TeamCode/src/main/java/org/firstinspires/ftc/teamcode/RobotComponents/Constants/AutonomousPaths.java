@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.RobotComponents.Constants;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+
+import org.firstinspires.ftc.teamcode.Common.VectorD;
 
 public class AutonomousPaths {
-    public static VectorF MIDDLE = new VectorF(72, 32);
+    public static VectorD MIDDLE = new VectorD(72, 32);
 
 
 

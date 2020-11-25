@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode.RobotComponents;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -40,6 +39,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
 
 import java.util.Locale;
 
@@ -74,7 +74,7 @@ public class Imu
 
     private int counter = 0;
 
-    private VectorF oldHeading;
+    private VectorD oldHeading;
 
     Robot parent;
 
@@ -92,7 +92,7 @@ public class Imu
 
         globalAngle = parent.getRotationOffset();
 
-        oldHeading = new VectorF(0, System.currentTimeMillis());
+        oldHeading = new VectorD(0, System.currentTimeMillis());
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -124,7 +124,7 @@ public class Imu
         // provide positional information.
         imu = im;
 
-        oldHeading = new VectorF(0, System.currentTimeMillis());
+        oldHeading = new VectorD(0, System.currentTimeMillis());
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -172,7 +172,7 @@ public class Imu
         //r[1] = oldHeading.get(0);
         //r[2] = heading;
 
-        VectorF n = new VectorF(heading, System.currentTimeMillis());
+        VectorD n = new VectorD(heading, System.currentTimeMillis());
 
         oldHeading = n;
         return r;
