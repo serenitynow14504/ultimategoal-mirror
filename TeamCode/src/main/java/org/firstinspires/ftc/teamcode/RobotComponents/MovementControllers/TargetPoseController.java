@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RobotComponents.MovementControllers;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 import org.firstinspires.ftc.teamcode.Common.PIDController;
 import org.firstinspires.ftc.teamcode.Common.Utilities;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
@@ -13,20 +14,12 @@ import java.util.HashMap;
 
 import static java.lang.Math.sqrt;
 
-//@Config
-public class PurePursuitController2D extends MovementController{
-
-    public PurePursuitController2D(Robot r, Path p) {
-        super(r, p);
+class TargetPoseController extends MovementController {
+    public TargetPoseController(Robot r, VectorD target) {
+        super(r, new Path(new VectorD[] {r.get2DPosition(), Utilities.clipToXY(target)}));
     }
 
-    public static double TpK_P = 2.5;
-    public static double TpK_I = 0;
-    public static double TpK_D = 2.5;
-    //previous working set: 3, 0, 1.5
-
     public void followPath(double power) {
-
         timer = new ElapsedTime();
 
 
@@ -35,12 +28,6 @@ public class PurePursuitController2D extends MovementController{
         r.setOutputRange(0, power);  //-power to power?
         r.enable();
 
-
-        PIDController toPath = new PIDController(TpK_P, TpK_I, TpK_D);
-        toPath.setSetpoint(0);
-        toPath.setOutputRange(0, 144);
-        toPath.setWindowing(40);
-        toPath.enable();
 
         double distToEnd, rampDownDist = -1, rampDownTo = 0.35;
         double closestPathPointParameter;
@@ -79,10 +66,9 @@ public class PurePursuitController2D extends MovementController{
 
 
             VectorD returnToPath = new VectorD(0, 0);
-            final double toPathPIDOutput = toPath.performPID(path.getNormalError());
             if(toNearestPoint.magnitude() != 0) {
                 returnToPath = Utilities.setMagnitude(toNearestPoint,
-                        toPathPIDOutput * -path.getLeftRight() * antiPathCorrect);
+                         -path.getLeftRight() * antiPathCorrect);
                 //Utilities.log(-path.getLeftRight());
             }
 
@@ -101,7 +87,7 @@ public class PurePursuitController2D extends MovementController{
 
 
 
-            double rCorrect = r.performPID(pos.getR());//ny
+            double rCorrect = r.performPID(pos.get(2));//ny
 
 
 
@@ -115,7 +101,6 @@ public class PurePursuitController2D extends MovementController{
                     new HashMap<String, Double>() {
                         {
                             put("path normal error", path.getNormalError());
-                            put("PID output", toPathPIDOutput);
                         }
                     });
 
@@ -133,5 +118,4 @@ public class PurePursuitController2D extends MovementController{
         robot.driveTrain.setPowers(0);
         setProgress(0);
     }
-
 }

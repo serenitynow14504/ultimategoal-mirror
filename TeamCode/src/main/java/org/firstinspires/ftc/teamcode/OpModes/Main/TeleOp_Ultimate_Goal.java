@@ -1,20 +1,22 @@
-package org.firstinspires.ftc.teamcode.OpModes.Old;
+package org.firstinspires.ftc.teamcode.OpModes.Main;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
 @TeleOp
-public class odoTest extends LinearOpMode {
-    private Robot robot = new Robot(this, RobotConstants.ALLIANCES.RED, FieldConstants.SKYSTONE_FIELD, -1, -1, 0, 0, 0);
-
+public class TeleOp_Ultimate_Goal extends LinearOpMode {
+    Robot robot;
 
     @Override
     public void runOpMode() {
+
+        robot = new Robot(this, RobotConstants.ALLIANCES.SOLO, FieldConstants.EMPTY_FIELD, 1, 1, 0,
+                0, 0,
+                true);
         robot.INIT(hardwareMap);
 
         waitForStart();
@@ -22,10 +24,10 @@ public class odoTest extends LinearOpMode {
         robot.begin();
 
         while(opModeIsActive()) {
-            VectorD pos = robot.getPosition();
-            telemetry.addData("position:  ", pos.toString());
-            //telemetry.addData("encX pos = ", robot.odometry.getEncPos(0));
-            //telemetry.addData("encY pos = ", robot.odometry.getEncPos(1));
+            robot.teleOp(gamepad1);
+            robot.displayDash();
+            telemetry.addData("Position: ",
+                    "(" + robot.getPosition().getX() + ", " + robot.getPosition().getY() + ")");
             telemetry.update();
         }
     }

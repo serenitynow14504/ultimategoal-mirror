@@ -2,16 +2,16 @@ package org.firstinspires.ftc.teamcode.Common;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+
 import org.firstinspires.ftc.robotcore.internal.android.dex.util.ExceptionWithContext;
 
 import static org.firstinspires.ftc.teamcode.Common.Utilities.*;
 
 public class Polygon {
-    private VectorF[] vertices;
+    private VectorD[] vertices;
     private Line[] sides;
 
-    public Polygon(VectorF[] vertices) throws ExceptionWithContext{
+    public Polygon(VectorD[] vertices) throws ExceptionWithContext{
         if(vertices.length <= 2) {
             throw new ExceptionWithContext("too little vertices to create polygon");
         }
@@ -35,8 +35,8 @@ public class Polygon {
         }
     }
 
-    public VectorF closestVector(VectorF point) {
-        VectorF[] lengths = new VectorF[vertices.length];
+    public VectorD closestVector(VectorD point) {
+        VectorD[] lengths = new VectorD[vertices.length];
 
         for(int i = 0; i < lengths.length; i++) {
             lengths[i] = sides[i].closestVector(point);
@@ -45,8 +45,8 @@ public class Polygon {
         return minLengthVector(lengths);
     }
 
-    public VectorF closestVector(Line line) {
-        VectorF[] lengths = new VectorF[vertices.length];
+    public VectorD closestVector(Line line) {
+        VectorD[] lengths = new VectorD[vertices.length];
 
         for(int i = 0; i < lengths.length; i++) {
             lengths[i] = sides[i].closestVector(line);
@@ -55,8 +55,8 @@ public class Polygon {
         return minLengthVector(lengths);
     }
 
-    public VectorF closestVector(Polygon polygon) {
-        VectorF[] lengths = new VectorF[sides() * polygon.sides()];
+    public VectorD closestVector(Polygon polygon) {
+        VectorD[] lengths = new VectorD[sides() * polygon.sides()];
 
         for(int i = 0; i < sides(); i++) {
             for(int j = 0; j < polygon.sides(); j++) {
@@ -65,7 +65,7 @@ public class Polygon {
             }
         }
 
-        return minLengthVector(lengths).multiplied(1);
+        return minLengthVector(lengths).multiplied(1.0);
     }
 
     public void show(TelemetryPacket packet, String color) {

@@ -2,45 +2,45 @@ package org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.Common.Polygon;
 import org.firstinspires.ftc.teamcode.Common.Utilities;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
 
 public class Obstacle {
     private double safetyDist, maxRepelDist, maxRepelPow;
     private Polygon shape;
-    public Obstacle(VectorF[] vertices, double safetyDist, double maxRepelDist, double maxRepelPow) {
+    public Obstacle(VectorD[] vertices, double safetyDist, double maxRepelDist, double maxRepelPow) {
         this.safetyDist = safetyDist;
         shape = new Polygon(vertices);
         this.maxRepelDist = maxRepelDist;
         this.maxRepelPow = maxRepelPow;
     }
 
-    public VectorF repel(Polygon robot) {
-        VectorF raw = shape.closestVector(robot);
-        VectorF repel;
+    public VectorD repel(Polygon robot) {
+        VectorD raw = shape.closestVector(robot);
+        VectorD repel;
         if(raw.magnitude() < maxRepelDist) {
             double mag = maxRepelPow - raw.magnitude() * maxRepelPow / maxRepelDist;
             repel = Utilities.setMagnitude(raw, mag);
         } else {
-            repel = new VectorF(0, 0);
+            repel = new VectorD(0, 0);
         }
         return repel;
     }
 
-    public VectorF repel(VectorF robot) {
-        VectorF raw = shape.closestVector(robot);
+    public VectorD repel(VectorD robot) {
+        VectorD raw = shape.closestVector(robot);
         double newMag = raw.magnitude() - safetyDist;
         if(newMag<0) {
             newMag = 0.01;
         }
         raw = Utilities.setMagnitude(raw, newMag);
-        VectorF repel;
+        VectorD repel;
         if(raw.magnitude() < maxRepelDist) {
             double mag = maxRepelPow - raw.magnitude() * maxRepelPow / maxRepelDist;
             repel = Utilities.setMagnitude(raw, mag);
         } else {
-            repel = new VectorF(0, 0);
+            repel = new VectorD(0, 0);
         }
         return repel;
     }

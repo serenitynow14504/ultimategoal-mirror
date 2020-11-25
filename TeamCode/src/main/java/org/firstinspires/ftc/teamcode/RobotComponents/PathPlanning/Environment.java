@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.Common.Polygon;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
 
 public class Environment {
     private Obstacle[] obstacles;
@@ -12,16 +12,16 @@ public class Environment {
         this.obstacles = obstacles;
     }
 
-    public VectorF repel(Polygon robot) {
-        VectorF repel = new VectorF(0, 0);
+    public VectorD repel(Polygon robot) {
+        VectorD repel = new VectorD(0, 0);
         for(Obstacle o : obstacles) {
             repel.add(o.repel(robot));
         }
         return repel;
     }
 
-    public VectorF repel(VectorF robot) {
-        VectorF repel = new VectorF(0, 0);
+    public VectorD repel(VectorD robot) {
+        VectorD repel = new VectorD(0, 0);
         for(Obstacle o : obstacles) {
             repel.add(o.repel(robot));
         }

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Common;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+
 
 import java.util.ArrayList;
 
@@ -92,7 +92,7 @@ public class Spline {
      */
     public double[] getIntY(){return getInt(1);}
 
-    public VectorF[] getInyXY(){return Utilities.combineXY(getIntX(), getIntY());}
+    public VectorD[] getInyXY(){return Utilities.combineXY(getIntX(), getIntY());}
 
     /**
      * Returns the spline data of index n. Note that n=0 returns the interpolated

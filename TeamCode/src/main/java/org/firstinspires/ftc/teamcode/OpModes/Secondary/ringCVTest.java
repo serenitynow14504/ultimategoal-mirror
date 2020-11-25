@@ -23,47 +23,51 @@ package org.firstinspires.ftc.teamcode.OpModes.Secondary;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.RobotComponents.CV.Pipelines.RingCV;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
-import org.firstinspires.ftc.teamcode.RobotComponents.CV.Pipelines.skyStoneCV;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @TeleOp
-public class stoneCVTest extends LinearOpMode
+public class ringCVTest extends LinearOpMode
 {
-    OpenCvCamera phoneCam;
+    OpenCvCamera camera;
 
-    private Robot robot = new Robot(this, RobotConstants.ALLIANCES.BLUE, FieldConstants.SKYSTONE_FIELD, 1, 1, 0, 0, 0, true);
+    private Robot robot = new Robot(this, RobotConstants.ALLIANCES.SOLO,
+            FieldConstants.EMPTY_FIELD, 1, 1, 0, 0, 0, true);
 
-    skyStoneCV pipeline = new skyStoneCV(this, robot);
+    RingCV pipeline = new RingCV(this, robot);
 
     @Override
     public void runOpMode()
     {
-        robot.INIT();
+        robot.INIT(hardwareMap);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        //camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(OpenCvCamera
+        // .class, "Webcam 1"), cameraMonitorViewId);
 
-        phoneCam.openCameraDevice();
+        camera.openCameraDevice();
 
-        phoneCam.setPipeline(pipeline);
+        camera.setPipeline(pipeline);
 
-        phoneCam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
-        phoneCam.showFpsMeterOnViewport(false);
+        camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+        camera.showFpsMeterOnViewport(false);
+
+
 
         waitForStart();
 
 
         while (opModeIsActive())
         {
-            RobotLog.d("Bruh skystone is at: " + pipeline.getFinalPos());
+            //RobotLog.d("Bruh skystone is at: " + pipeline.getFinalPos());
             telemetry.addData("skyStonePos: ", pipeline.getFinalPos());
         }
     }

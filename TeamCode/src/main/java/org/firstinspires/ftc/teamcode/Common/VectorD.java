@@ -21,16 +21,59 @@ public class VectorD extends VectorF {
         return get(1);
     }
 
+    public double getR() {
+        return get(2);
+    }
+
 
     @Const
-    public VectorF multiplied(double scale)
+    public VectorD multiplied(double scale)
     {
-        return multiplied((float)scale);
+        VectorF result = multiplied((float)scale);
+        if(result.length()==2) {
+            return new VectorD(result.get(0), result.get(1));
+        } else {
+            return new VectorD(result.get(0), result.get(1), result.get(2));
+        }
     }
 
     @NonConst
     public void multiply(double scale)
     {
         multiply((float)scale);
+    }
+
+    @Const
+    public VectorD added(VectorD addend)
+    {
+        VectorF result = added((VectorF)addend);
+        if(result.length()==2) {
+            return new VectorD(result.get(0), result.get(1));
+        } else {
+            return new VectorD(result.get(0), result.get(1), result.get(2));
+        }
+    }
+
+    @NonConst
+    public void add(VectorD addend)
+    {
+        add((VectorF)addend);
+    }
+
+    @Const
+    public VectorD subtracted(VectorD subtrahend)
+    {
+        VectorF result = subtracted((VectorF)subtrahend);
+        if(result.length()==2) {
+            return new VectorD(result.get(0), result.get(1));
+        } else {
+            return new VectorD(result.get(0), result.get(1), result.get(2));
+        }
+    }
+
+    @NonConst
+    public void subtract(VectorD subtrahend)
+    {
+        subtract((VectorF)subtrahend);
     }
 }

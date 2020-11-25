@@ -2,23 +2,23 @@ package org.firstinspires.ftc.teamcode.Common;
 
 import android.util.Pair;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+
 
 public class Line {
     private double slope, yIntercept;
     private double paramXSlope, paramXIntercept, paramYSlope, paramYIntercept, d;
-    private VectorF a, b;
+    private VectorD a, b;
     private boolean vertical = false;
     private int pathPos;
 
-    public Line(VectorF a, VectorF b, int pos) {
-        this.a = new VectorF(a.get(0), a.get(1));
-        this.b = new VectorF(b.get(0), b.get(1));
+    public Line(VectorD a, VectorD b, int pos) {
+        this.a = new VectorD(a.getX(), a.getY());
+        this.b = new VectorD(b.getX(), b.getY());
         pathPos = pos;
 
-        if(a.get(0) != b.get(0)) {
-            slope = (a.get(1) - b.get(1)) / (a.get(0) - b.get(0));
-            yIntercept = a.get(1) - slope * a.get(0);
+        if(a.getX() != b.getX()) {
+            slope = (a.getY() - b.getY()) / (a.getX() - b.getX());
+            yIntercept = a.getY() - slope * a.getX();
         } else {
             vertical = true;
             slope = Double.POSITIVE_INFINITY;
@@ -26,11 +26,11 @@ public class Line {
         }
 
         d = Utilities.distance(a, b);
-        paramXIntercept = a.get(0);
-        paramXSlope = (b.get(0) - a.get(0)) / d;
+        paramXIntercept = a.getX();
+        paramXSlope = (b.getX() - a.getX()) / d;
 
-        paramYIntercept = a.get(1);
-        paramYSlope = (b.get(1) - a.get(1)) / d;
+        paramYIntercept = a.getY();
+        paramYSlope = (b.getY() - a.getY()) / d;
     }
 
     private Line(double slope, double yIntercept) {
@@ -40,28 +40,28 @@ public class Line {
 
         } else {
             this.yIntercept = yIntercept;
-            a = new VectorF(0, (float)yIntercept);
-            b = new VectorF(1, (float)(slope + yIntercept));
+            a = new VectorD(0, (float)yIntercept);
+            b = new VectorD(1, (float)(slope + yIntercept));
         }
         this.slope = slope;
         d = Utilities.distance(a, b);
 
     }
 
-    public Line(VectorF point, double slop) {
+    public Line(VectorD point, double slop) {
         slope = slop;
         if(Double.isInfinite(slope)) {
             vertical = true;
             this.yIntercept = Double.NaN;
 
-            a = new VectorF(point.get(0), 0);
-            b = new VectorF(point.get(0), 1);
+            a = new VectorD(point.getX(), 0);
+            b = new VectorD(point.getX(), 1);
         } else {
-            yIntercept = point.get(1) - slope * point.get(0);
+            yIntercept = point.getY() - slope * point.getX();
 
-            a = new VectorF(point.get(0), point.get(1)); //a = new VectorF(point.get(0), point
+            a = new VectorD(point.getX(), point.getY()); //a = new VectorD(point.getX(), point
             // .get(2));
-            b = new VectorF((float)3.14, (float)(slope*3.14 + yIntercept));
+            b = new VectorD((float)3.14, (float)(slope*3.14 + yIntercept));
         }
     }
 
@@ -72,10 +72,10 @@ public class Line {
         return -1/slope;
     }
 
-    public VectorF getPointA() {
+    public VectorD getPointA() {
         return Utilities.duplicate(a);
     }
-    public VectorF getPointB() {
+    public VectorD getPointB() {
         return Utilities.duplicate(b);
     }
 
@@ -85,11 +85,11 @@ public class Line {
     public double getLength() {return d;}
     public int getPathPos() {return pathPos;}
 
-    public Line perpLine(VectorF point) {
+    public Line perpLine(VectorD point) {
         return new Line(point, getPerpSlope());
     }
 
-    public VectorF intersect(Line l) {
+    public VectorD intersect(Line l) {
         if(slope == l.getSlope()) {
             if(yIntercept == l.getyIntercept()) {
                 //throw new Exception();
@@ -103,53 +103,53 @@ public class Line {
 
         double x, y;
         if(vertical) {
-            x = a.get(0);
+            x = a.getX();
             y = l.getSlope()*x + l.yIntercept;
         } else if(l.isVertical()) {
-            x = l.a.get(0);
+            x = l.a.getX();
             y = slope * x + yIntercept;
         } else {
             x = (l.getyIntercept() - yIntercept) / (slope - l.getSlope());
             y = slope * x + yIntercept;
         }
 
-         return  new VectorF((float)x, (float)y);
+         return  new VectorD((float)x, (float)y);
     }
 
-    public Pair<VectorF, Double> getClosestPoint(VectorF point) {
-        VectorF intersection = intersect(perpLine(point));
-        VectorF closestPoint;
+    public Pair<VectorD, Double> getClosestPoint(VectorD point) {
+        VectorD intersection = intersect(perpLine(point));
+        VectorD closestPoint;
         if(!vertical) {
-            if (a.get(0) < b.get(0)) {
-                if(intersection.get(0) < a.get(0)) {
+            if (a.getX() < b.getX()) {
+                if(intersection.getX() < a.getX()) {
                     closestPoint = a;
-                } else if (intersection.get(0) > b.get(0)) {
+                } else if (intersection.getX() > b.getX()) {
                     closestPoint = b;
                 } else {
                     closestPoint = intersection;
                 }
             } else {
-                if(intersection.get(0) < b.get(0)) {
+                if(intersection.getX() < b.getX()) {
                     closestPoint = b;
-                } else if (intersection.get(0) > a.get(0)) {
+                } else if (intersection.getX() > a.getX()) {
                     closestPoint = a;
                 } else {
                     closestPoint = intersection;
                 }
             }
         } else {
-            if (a.get(1) < b.get(1)) {
-                if(intersection.get(1) < a.get(1)) {
+            if (a.getY() < b.getY()) {
+                if(intersection.getY() < a.getY()) {
                     closestPoint = a;
-                } else if (intersection.get(1) > b.get(1)) {
+                } else if (intersection.getY() > b.getY()) {
                     closestPoint = b;
                 } else {
                     closestPoint = intersection;
                 }
             } else {
-                if(intersection.get(1) < b.get(1)) {
+                if(intersection.getY() < b.getY()) {
                     closestPoint = b;
-                } else if (intersection.get(1) > a.get(1)) {
+                } else if (intersection.getY() > a.getY()) {
                     closestPoint = a;
                 } else {
                     closestPoint = intersection;
@@ -160,40 +160,40 @@ public class Line {
         return new Pair<>(closestPoint, Utilities.distance(point, closestPoint));
     }
 
-    public VectorF closestVector(VectorF point) {
-        /*VectorF intersection = intersect(perpLine(point));
-        VectorF closestPoint;
+    public VectorD closestVector(VectorD point) {
+        /*VectorD intersection = intersect(perpLine(point));
+        VectorD closestPoint;
         if(!vertical) {
-            if (a.get(0) < b.get(0)) {
-                if(intersection.get(0) < a.get(0)) {
+            if (a.getX() < b.getX()) {
+                if(intersection.getX() < a.getX()) {
                     closestPoint = a;
-                } else if (intersection.get(0) > b.get(0)) {
+                } else if (intersection.getX() > b.getX()) {
                     closestPoint = b;
                 } else {
                     closestPoint = intersection;
                 }
             } else {
-                if(intersection.get(0) < b.get(0)) {
+                if(intersection.getX() < b.getX()) {
                     closestPoint = b;
-                } else if (intersection.get(0) > a.get(0)) {
+                } else if (intersection.getX() > a.getX()) {
                     closestPoint = a;
                 } else {
                     closestPoint = intersection;
                 }
             }
         } else {
-            if (a.get(1) < b.get(1)) {
-                if(intersection.get(1) < a.get(1)) {
+            if (a.getY() < b.getY()) {
+                if(intersection.getY() < a.getY()) {
                     closestPoint = a;
-                } else if (intersection.get(1) > b.get(1)) {
+                } else if (intersection.getY() > b.getY()) {
                     closestPoint = b;
                 } else {
                     closestPoint = intersection;
                 }
             } else {
-                if(intersection.get(1) < b.get(1)) {
+                if(intersection.getY() < b.getY()) {
                     closestPoint = b;
-                } else if (intersection.get(1) > a.get(1)) {
+                } else if (intersection.getY() > a.getY()) {
                     closestPoint = a;
                 } else {
                     closestPoint = intersection;
@@ -207,20 +207,20 @@ public class Line {
         return point.subtracted(getClosestPoint(point).first);
     }
 
-    public VectorF closestVector(Line line) {
-        VectorF vector;
+    public VectorD closestVector(Line line) {
+        VectorD vector;
 
         if(slope == line.getSlope()) {
             Line perp = line.perpLine(line.getPointA());
             vector = line.intersect(perp).subtracted(intersect(perp));
         } else {
-            VectorF p1 = line.getClosestPoint(getPointA()).first.subtracted(a);
-            VectorF p2 = line.getClosestPoint(getPointB()).first.subtracted(b);
+            VectorD p1 = line.getClosestPoint(getPointA()).first.subtracted(a);
+            VectorD p2 = line.getClosestPoint(getPointB()).first.subtracted(b);
 
-            VectorF p3 = line.getPointA().subtracted(getClosestPoint(line.getPointA()).first);
-            VectorF p4 = line.getPointB().subtracted(getClosestPoint(line.getPointB()).first);
+            VectorD p3 = line.getPointA().subtracted(getClosestPoint(line.getPointA()).first);
+            VectorD p4 = line.getPointB().subtracted(getClosestPoint(line.getPointB()).first);
 
-            VectorF[] ps = new VectorF[] {
+            VectorD[] ps = new VectorD[] {
                     p1, p2, p3, p4
             };
 
@@ -231,20 +231,20 @@ public class Line {
     }
 
 
-     boolean facing(VectorF point) {
+     boolean facing(VectorD point) {
         if(slope != 0) {
             Line aPerp = perpLine(a);
             Line bPerp = perpLine(b);
 
-            if((point.get(1) >= point.get(0) * aPerp.getSlope() + aPerp.getyIntercept() &&
-                        point.get(1) <= point.get(0) * bPerp.getSlope() + bPerp.getyIntercept()) ||
-                    (point.get(1) <= point.get(0) * aPerp.getSlope() + aPerp.getyIntercept() &&
-                        point.get(1) >= point.get(0) * bPerp.getSlope() + bPerp.getyIntercept())) {
+            if((point.getY() >= point.getX() * aPerp.getSlope() + aPerp.getyIntercept() &&
+                        point.getY() <= point.getX() * bPerp.getSlope() + bPerp.getyIntercept()) ||
+                    (point.getY() <= point.getX() * aPerp.getSlope() + aPerp.getyIntercept() &&
+                        point.getY() >= point.getX() * bPerp.getSlope() + bPerp.getyIntercept())) {
                 return true;
             }
         } else {
-            if((point.get(0) >= a.get(0) && point.get(0) <= b.get(0)) ||
-                    (point.get(0) <= a.get(0) && point.get(0) >= b.get(0))) {
+            if((point.getX() >= a.getX() && point.getX() <= b.getX()) ||
+                    (point.getX() <= a.getX() && point.getX() >= b.getX())) {
                 return true;
             }
 
@@ -253,20 +253,20 @@ public class Line {
         return false;
     }
 
-    public int calculateLeftRight(VectorF point) {
-        VectorF clippedPoint = Utilities.clipToXY(point);
-        VectorF toPath = intersect(perpLine(clippedPoint)).subtracted(clippedPoint);
-        VectorF toRight = new VectorF(this.toVector().get(1), -this.toVector().get(0));
+    public int calculateLeftRight(VectorD point) {
+        VectorD clippedPoint = Utilities.clipToXY(point);
+        VectorD toPath = intersect(perpLine(clippedPoint)).subtracted(clippedPoint);
+        VectorD toRight = new VectorD(this.toVector().getY(), -this.toVector().getX());
         float dot = toRight.dotProduct(toPath);
         return (int)Math.signum(dot);
     }
 
 
-    public VectorF getParamatrizedPoint(double t) {
-        return new VectorF((float)(t*paramXSlope + paramXIntercept), (float)(t*paramYSlope + paramYIntercept));
+    public VectorD getParamatrizedPoint(double t) {
+        return new VectorD((float)(t*paramXSlope + paramXIntercept), (float)(t*paramYSlope + paramYIntercept));
     }
 
-    public double getParameter(VectorF point) {
+    public double getParameter(VectorD point) {
         return Utilities.distance(a, point);
     }
 
@@ -274,7 +274,7 @@ public class Line {
         return slope * x + yIntercept;
     }
 
-    public VectorF toVector() {
+    public VectorD toVector() {
         return getPointB().subtracted(getPointA());
     }
 

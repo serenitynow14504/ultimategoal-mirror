@@ -2,9 +2,12 @@ package org.firstinspires.ftc.teamcode.RobotComponents;
 
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
+
 
 public class Odometry extends Capability{
     private DcMotor encX, encY;
@@ -12,10 +15,10 @@ public class Odometry extends Capability{
 
 
     public enum MODES {
-        ARC, LINE, BAD, NONE
+        ARC, LINE, BAD
     }
 
-    private MODES mode;
+    private MODES mode = MODES.LINE;
 
 
     private int oldX, oldY, newX, newY;
@@ -31,7 +34,7 @@ public class Odometry extends Capability{
 
 
 
-    public Odometry(Robot par, double xp, double yp, MODES m) {
+    public Odometry(Robot par, double xp, double yp) {
         super(par);
         speedTimer = new ElapsedTime();
 
@@ -40,7 +43,6 @@ public class Odometry extends Capability{
         eMag = Math.sqrt(Math.pow(ePosX, 2) + Math.pow(ePosY, 2));   //le
         eAng = Math.atan2(ePosY, ePosX);   //theta e
 
-        mode = m;
     }
 
     public void setMode(MODES m) {mode = m;}
@@ -93,7 +95,7 @@ public class Odometry extends Capability{
             xSpeed = encoderCountsToInches(newX - oldX) / speedTimer.seconds();
             ySpeed = encoderCountsToInches(newY - oldY) / speedTimer.seconds();
 
-            //parent.setPosition(new VectorF(parent.getPosition().get(0),
+            //parent.setPosition(new VectorD(parent.getPosition().get(0),
             //        parent.getPosition().get(1), (float)parent.imu.getAngle()));
 
             oldX = newX;
@@ -157,8 +159,8 @@ public class Odometry extends Capability{
             finalY = yEncodersOld + moveDist * Math.sin(thetaOld);
         }
 
-        VectorF currentPos = parent.getPosition();
-        VectorF newPos = new VectorF((float)(currentPos.get(0) + finalX),
+        VectorD currentPos = parent.getPosition();
+        VectorD newPos = new VectorD((float)(currentPos.get(0) + finalX),
                 (float)(currentPos.get(1) + finalY), (float)Math.toDegrees(newR));
         parent.setPosition(newPos);
     }
@@ -178,8 +180,8 @@ public class Odometry extends Capability{
         //double finalX = xInches*Math.cos(newR) - yInches*Math.sin(newR);
         //double finalY = yInches*Math.cos(newR) + xInches*Math.sin(newR);
 
-        VectorF currentPos = parent.getPosition();
-        VectorF newPos = new VectorF((float)(currentPos.get(0) + finalX),
+        VectorD currentPos = parent.getPosition();
+        VectorD newPos = new VectorD((float)(currentPos.get(0) + finalX),
                 (float)(currentPos.get(1) + finalY), (float)Math.toDegrees(newR));
 
         parent.setPosition(newPos);
@@ -195,9 +197,9 @@ public class Odometry extends Capability{
         double globalMovey = actualMoveX*Math.sin(t) + actualMoveY*Math.cos(t);
 
 
-        VectorF currentPosition = parent.getEstimatedPosition();
+        VectorD currentPosition = parent.getEstimatedPosition();
 
-        VectorF globalMove = new VectorF((float)globalMoveX, (float)globalMovey);
+        VectorD globalMove = new VectorD((float)globalMoveX, (float)globalMovey);
 
         currentPosition.add(globalMove);
 
@@ -208,15 +210,17 @@ public class Odometry extends Capability{
         return updateSpeed;
     }
 
-    public int getOdoEncoderXPosition() {return -encX.getCurrentPosition();}
+    public int getOdoEncoderXPosition() {return encX.getCurrentPosition();}
     public int getOdoEncoderYPosition() {return encY.getCurrentPosition();}
 
-    void init() {
-        encX = parent.getMyOpMode().hardwareMap.get(DcMotor.class, "encX");
-        encY = parent.getMyOpMode().hardwareMap.get(DcMotor.class, "encY");
+    void init(HardwareMap hardwareMap) {
+        encX = hardwareMap.get(DcMotor.class, "encX");
+        encY = hardwareMap.get(DcMotor.class, "encY");
         oldX = getOdoEncoderXPosition();
         oldY = getOdoEncoderYPosition();
         parent.imu.setAngles();
         oldR = Math.toRadians(parent.imu.heading());
     }
+
+    void teleOp(Gamepad gamepad) {}
 }

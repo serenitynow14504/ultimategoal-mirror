@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Test;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Odometry;
@@ -18,7 +18,7 @@ public class PPControllerTest extends LinearOpMode {
         r = new Robot(this, RobotConstants.ALLIANCES.RED, FieldConstants.TEST, 1, 1, 0, 0, 0,
                 true);
         r.odometry.setMode(Odometry.MODES.LINE);
-        r.INIT();
+        r.INIT(hardwareMap);
 
         waitForStart();
 
@@ -27,12 +27,12 @@ public class PPControllerTest extends LinearOpMode {
         //while(opModeIsActive()) {r.displayDash(null, null);}
 
         r.followSplinedPath2D(
-            new VectorF[] {
-                new VectorF(0, 0),
-                new VectorF(0, 36),
-                new VectorF(36, 36),
-                new VectorF(36, 0),
-                new VectorF(6, 0)
+            new VectorD[] {
+                new VectorD(0, 0),
+                new VectorD(0, 36),
+                new VectorD(36, 36),
+                new VectorD(36, 0),
+                new VectorD(6, 0)
             }, 0.5);
     }
 }

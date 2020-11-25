@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.RobotComponents;
 
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 
@@ -58,4 +61,7 @@ public abstract class Capability extends Thread {
     public void run() {
 
     }
+
+    abstract void teleOp(Gamepad gamepad);
+    abstract void init(HardwareMap hardrwareMap);
 }
