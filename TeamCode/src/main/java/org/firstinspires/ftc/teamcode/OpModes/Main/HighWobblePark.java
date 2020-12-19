@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Test;
+package org.firstinspires.ftc.teamcode.OpModes.Main;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
 @Autonomous
-public class WobbleGoal extends LinearOpMode {
+public class HighWobblePark extends LinearOpMode {
     Robot robot;
 
     @Override
@@ -18,6 +18,8 @@ public class WobbleGoal extends LinearOpMode {
                 72-RobotConstants.width, 0, 0);
 
         robot.INIT(hardwareMap, false);
+
+        robot.wobbleArm.grabber(true);
 
         while(!isStopRequested() && !opModeIsActive()) {
             robot.detectStack();
@@ -31,25 +33,45 @@ public class WobbleGoal extends LinearOpMode {
         robot.begin();
 
         VectorD target = FieldConstants.getTargetZone(robot.getStackState());
+        VectorD targetPose = new VectorD(target.getX(), target.getY() - 18, -90);
 
 
         VectorD[] path = new VectorD[] {
                 robot.getPosition(),
-                new VectorD(76, 40),
-                target
+                new VectorD(36, 40, 0),
+                new VectorD(36, 60, -1)
         };
 
-        telemetry.addData("path length", path.length);
-        telemetry.update();
-        sleep(1000);
+        robot.shooter.setPower(-1);
+
+        sleep(500);
 
         robot.followPath2D(path, 0.6);
 
+        robot.shooter.push();
+        sleep(500);
+        robot.shooter.push();
+        sleep(500);
+        robot.shooter.push();
 
-        //robot.driveTrain.setScaledPowersFromGlobalVector(new VectorD(0, 0.3), 0);
+        robot.shooter.setPower(0);
 
-        //robot.wobbleArm.grabber(false);
+        path = new VectorD[] {
+                robot.getPosition(),
+                targetPose
+        };
 
+        robot.followPath2D(path, 0.6);
 
+        robot.wobbleArm.grabber(false);
+
+        sleep(500);
+
+        path = new VectorD[] {
+                robot.getPosition(),
+                new VectorD(60, 84, -90)
+        };
+
+        robot.followPath2D(path, 0.6);
     }
 }

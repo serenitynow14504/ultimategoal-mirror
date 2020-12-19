@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Common.Utilities;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Path;
+import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.RotPath;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
 import java.util.HashMap;
@@ -85,7 +86,9 @@ class TargetPoseController extends MovementController {
                 rampDownCoeff = (1-rampDownTo)*distToEnd/rampDownDist + rampDownTo;
             }
 
-
+            if(path instanceof RotPath) {
+                r.setSetpoint(((RotPath) path).rotFromParam(closestPathPointParameter));
+            }
 
             double rCorrect = r.performPID(pos.get(2));//ny
 
