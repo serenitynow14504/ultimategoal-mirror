@@ -16,9 +16,9 @@ import androidx.annotation.NonNull;
 public class PurePursuitDrivetrain extends DriveTrain {
     private Path path;
     private RotationPath rotationPath;
-    private Odometry.MODES mode;
+    private OdometryLocalizer.MODES mode;
 
-    public PurePursuitDrivetrain(Robot p, Odometry.MODES mode) {
+    public PurePursuitDrivetrain(Robot p, OdometryLocalizer.MODES mode) {
         super(p);
         this.mode = mode;
     }
@@ -56,7 +56,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
         timer.reset();
         do {
             VectorD pos;
-            if(mode == Odometry.MODES.LINE || mode == Odometry.MODES.ARC) pos = parent.getPosition();
+            if(mode == OdometryLocalizer.MODES.LINE || mode == OdometryLocalizer.MODES.ARC) pos = parent.getPosition();
             else pos = parent.getEstimatedPosition();
 
             path.calculateClosestData(pos);
@@ -140,7 +140,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
             //timer.reset();
 
             VectorD pos;
-            if(mode == Odometry.MODES.LINE || mode == Odometry.MODES.ARC) pos = parent.getPosition();
+            if(mode == OdometryLocalizer.MODES.LINE || mode == OdometryLocalizer.MODES.ARC) pos = parent.getPosition();
             else pos = parent.getEstimatedPosition();
 
             path.calculateClosestData(pos);
@@ -233,7 +233,7 @@ public class PurePursuitDrivetrain extends DriveTrain {
             //timer.reset();
 
             VectorD pos;
-            if(mode == Odometry.MODES.LINE || mode == Odometry.MODES.ARC) pos = parent.getPosition();
+            if(mode == OdometryLocalizer.MODES.LINE || mode == OdometryLocalizer.MODES.ARC) pos = parent.getPosition();
             else pos = parent.getEstimatedPosition();
 
             path.calculateClosestData(pos);

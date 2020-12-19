@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RobotComponents.Constants;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.teamcode.Common.Utilities;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Environment;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Obstacle;
@@ -19,6 +20,17 @@ public abstract class FieldConstants {
             new VectorD(63, 18),
             new VectorD(81, 18),
             new VectorD(81, 0)}, 3, 3, 1);
+
+    public static VectorD GOAL_POS = new VectorD(72, 144);
+    public static VectorD POWER_SHOT_POS = new VectorD(36, 144);
+
+    public static double distToPowerShot(VectorD pos) {
+        return Utilities.distance(pos, POWER_SHOT_POS);
+    }
+
+    public static double distToGoal(VectorD pos) {
+        return Utilities.distance(pos, GOAL_POS);
+    }
 
     public static double x1 = -15;
     public static double y1 = 24;
@@ -44,9 +56,9 @@ public abstract class FieldConstants {
 
     public static final Environment EMPTY_FIELD = new Environment(new Obstacle[] {});
 
-    public static VectorD TARGET_ZONE_1 = new VectorD(84, 84);
-    public static VectorD TARGET_ZONE_2 = new VectorD(60, 108);
-    public static VectorD TARGET_ZONE_3 = new VectorD(84, 132);
+    public static final VectorD TARGET_ZONE_1 = new VectorD(84, 84);
+    public static final VectorD TARGET_ZONE_2 = new VectorD(60, 108);
+    public static final VectorD TARGET_ZONE_3 = new VectorD(84, 132);
 
     public static VectorD getTargetZone(int zone) {
         switch(zone) {

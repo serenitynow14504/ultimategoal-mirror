@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
-import org.firstinspires.ftc.teamcode.RobotComponents.Odometry;
+import org.firstinspires.ftc.teamcode.RobotComponents.OdometryLocalizer;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
 @Autonomous
@@ -15,10 +15,10 @@ public class PPController2Test extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        r = new Robot(this, RobotConstants.ALLIANCES.RED, FieldConstants.EMPTY_FIELD, 1, 1, 0, 0, 0,
+        r = new Robot(this, RobotConstants.ALLIANCES.RED, FieldConstants.EMPTY_FIELD, 0, 0, 0,
                 true);
-        r.odometry.setMode(Odometry.MODES.LINE);
-        r.INIT(hardwareMap);
+        r.odometry.setMode(OdometryLocalizer.MODES.LINE);
+        r.INIT(hardwareMap, false);
 
         waitForStart();
 

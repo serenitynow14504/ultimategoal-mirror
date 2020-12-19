@@ -10,12 +10,12 @@ import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
 @TeleOp
 public class odoTest extends LinearOpMode {
-    private Robot robot = new Robot(this, RobotConstants.ALLIANCES.RED, FieldConstants.SKYSTONE_FIELD, -1, -1, 0, 0, 0);
+    private Robot robot = new Robot(this, RobotConstants.ALLIANCES.RED, FieldConstants.SKYSTONE_FIELD, 0, 0, 0);
 
 
     @Override
     public void runOpMode() {
-        robot.INIT(hardwareMap);
+        robot.INIT(hardwareMap, false);
 
         waitForStart();
 

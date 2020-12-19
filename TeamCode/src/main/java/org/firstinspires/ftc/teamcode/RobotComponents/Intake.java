@@ -27,17 +27,21 @@ class Intake extends Capability {
 
     public void teleOp(Gamepad gamepad) {
         //intakeWheels.setPower(gamepad.right_stick_y);
-        if(gamepad.dpad_right) {
+        if(gamepad.right_stick_y>0.5) {
             on();
             parent.setLedColors(0,255,0);
-        } else if(gamepad.dpad_left) {
+        } else if(gamepad.right_stick_y<-0.5) {
             off();
-        } else if(gamepad.y) {
+        } /*else if(gamepad.y) {
             reverse();
-        }
+        }*/
     }
 
     public void on() {
+        intakeWheels.setPower(0.8);
+    }
+
+    public void full() {
         intakeWheels.setPower(1);
     }
 
@@ -47,14 +51,6 @@ class Intake extends Capability {
 
     public void off() {
         intakeWheels.setPower(0);
-    }
-
-    public void toggle() {
-        if(intakeWheels.getPower()>0) {
-            on();
-        } else {
-            off();
-        }
     }
 
     public boolean ringStuck() {
@@ -72,6 +68,8 @@ class Intake extends Capability {
             reverse();
         }
         off();
+        sleep(100);
+        full();
         sleep(100);
         on();
     }
