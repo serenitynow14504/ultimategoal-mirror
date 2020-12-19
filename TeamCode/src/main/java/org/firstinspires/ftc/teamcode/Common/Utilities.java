@@ -67,8 +67,8 @@ public class Utilities {
     }
 
     public static VectorD rotate (VectorD v, double r) {
-        return new VectorD(v.get(0) * (float)Math.cos(r) - v.get(1) * (float)Math.sin(r),
-                v.get(1) * (float)Math.cos(r) + v.get(0) * (float)Math.sin(r));
+        return new VectorD(v.getX() * Math.cos(r) - v.getY() * Math.sin(r),
+                v.getY() * Math.cos(r) + v.getX() * Math.sin(r));
     }
 
     public static VectorD clipToXY(VectorD v) {

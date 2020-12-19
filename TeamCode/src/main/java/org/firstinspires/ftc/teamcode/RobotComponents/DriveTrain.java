@@ -10,12 +10,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Common.PIDController;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotComponents.Powers.WheelPowers;
 import org.openftc.revextensions2.ExpansionHubMotor;
 
 import androidx.annotation.NonNull;
 
 public class DriveTrain extends Capability {
-    private ExpansionHubMotor right, right2, left, left2;
+    private ExpansionHubMotor fRight, bRight, fLeft, bLeft;
 
     //so bobby asks dad, why did you name my brother sunny? Because I like the sun. Then why did you name me Bobby? Because i lIke BoBs
 
@@ -24,10 +25,8 @@ public class DriveTrain extends Capability {
     //PIDController r = new PIDController(0.015,0,0.007);//p = 0.01   d = 0.006
 
     PIDController heading;
-
     private boolean interrupt = false;
-
-    private double botRot=0;
+    public WheelPowers powers;
 
     DriveTrain(Robot parent) {
         super(parent);
@@ -44,29 +43,31 @@ public class DriveTrain extends Capability {
     }
 
     void init(HardwareMap hardwareMap) {
-        left = (ExpansionHubMotor) hardwareMap.get("fLeft");
-        left2 = (ExpansionHubMotor) hardwareMap.get("bLeft");
-        right = (ExpansionHubMotor) hardwareMap.get("fRight");
-        right2 = (ExpansionHubMotor) hardwareMap.get("bRight");
+        fLeft = (ExpansionHubMotor) hardwareMap.get("fLeft");
+        bLeft = (ExpansionHubMotor) hardwareMap.get("bLeft");
+        fRight = (ExpansionHubMotor) hardwareMap.get("fRight");
+        bRight = (ExpansionHubMotor) hardwareMap.get("bRight");
 
-        left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        left2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        right2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        left.setDirection(DcMotor.Direction.FORWARD);
-        left2.setDirection(DcMotor.Direction.FORWARD);
-        right.setDirection(DcMotor.Direction.REVERSE);
-        right2.setDirection(DcMotor.Direction.REVERSE);
+        fLeft.setDirection(DcMotor.Direction.FORWARD);
+        bLeft.setDirection(DcMotor.Direction.FORWARD);
+        fRight.setDirection(DcMotor.Direction.REVERSE);
+        bRight.setDirection(DcMotor.Direction.REVERSE);
 
-        left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        left2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        right2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         heading = new PIDController(RobotConstants.TRP, RobotConstants.TRI, RobotConstants.TRD);
         heading.setSetpoint(parent.getTargetRotation());
         heading.setOutputRange(0, 0.5);  //-power to power?
+
+        powers = new WheelPowers();
     }
 
 
@@ -110,8 +111,8 @@ public class DriveTrain extends Capability {
     public void setScaledPowersFromGlobalVector(@NonNull VectorD xy) {
         double robotRot = -Math.toRadians(parent.getPosition().getR());
         VectorD localVector = new VectorD(
-                (float)(xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
-                (float)(xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
+                (xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
+                (xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
         );
 
         setScaledPowersFromComponents(localVector.getX(), localVector.getY(), 0);
@@ -121,8 +122,8 @@ public class DriveTrain extends Capability {
     public void setScaledPowersFromGlobalVector(@NonNull VectorD xy, double r) {
         double robotRot = -Math.toRadians(parent.getPosition().getR());
         VectorD localVector = new VectorD(
-                (float)(xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
-                (float)(xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
+                (xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
+                (xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
         );
 
         setScaledPowersFromComponents(localVector.getX(), localVector.getY(), r);
@@ -132,8 +133,8 @@ public class DriveTrain extends Capability {
     public void setScaledPowersFromGlobalVector(@NonNull Pair<VectorD, Double> p) {
         double robotRot = Math.toRadians(parent.getPosition().getR());
         VectorD localVector = new VectorD(
-                (float)(p.first.getX() * Math.cos(robotRot) - p.first.getY() * Math.sin(robotRot)),
-                (float)(p.first.getX() * Math.sin(robotRot) + p.first.getY() * Math.cos(robotRot))
+                (p.first.getX() * Math.cos(robotRot) - p.first.getY() * Math.sin(robotRot)),
+                (p.first.getX() * Math.sin(robotRot) + p.first.getY() * Math.cos(robotRot))
         );
 
         setScaledPowersFromComponents(localVector.getX(), localVector.get(1), p.second);
@@ -171,31 +172,38 @@ public class DriveTrain extends Capability {
     }
 
     public void setPowers(double speed) {
-        left.setPower(speed);
-        right.setPower(speed);
-        left2.setPower(speed);
-        right2.setPower(speed);
+        fLeft.setPower(speed);
+        fRight.setPower(speed);
+        bLeft.setPower(speed);
+        bRight.setPower(speed);
     }
 
     public void setPowers(double fl, double fr, double bl, double br) {
-        left.setPower(fl);
-        right.setPower(fr);
-        left2.setPower(bl);
-        right2.setPower(br);
+        fLeft.setPower(fl);
+        fRight.setPower(fr);
+        bLeft.setPower(bl);
+        bRight.setPower(br);
     }
 
     public void setPowers(double[] powers) {
-        left.setPower(powers[0]);
-        right.setPower(powers[1]);
-        left2.setPower(powers[2]);
-        right2.setPower(powers[3]);
+        fLeft.setPower(powers[0]);
+        fRight.setPower(powers[1]);
+        bLeft.setPower(powers[2]);
+        bRight.setPower(powers[3]);
     }
 
     public void setPowers(double l, double r) { //for tank drive
-        left.setPower(l);
-        right.setPower(r);
-        left2.setPower(l);
-        right2.setPower(r);
+        fLeft.setPower(l);
+        fRight.setPower(r);
+        bLeft.setPower(l);
+        bRight.setPower(r);
+    }
+
+    void setPowers(WheelPowers wp) {
+        fLeft.setPower(wp.fl);
+        fRight.setPower(wp.fr);
+        bLeft.setPower(wp.bl);
+        bRight.setPower(wp.br);
     }
 
 
@@ -231,10 +239,10 @@ public class DriveTrain extends Capability {
         bl += turnPower;
         br -= turnPower;
 
-        left.setPower(parent.getFront() * fl);
-        right.setPower(parent.getFront() * fr);
-        left2.setPower(parent.getFront() * bl);
-        right2.setPower(parent.getFront() * br);
+        fLeft.setPower(parent.getFront() * fl);
+        fRight.setPower(parent.getFront() * fr);
+        bLeft.setPower(parent.getFront() * bl);
+        bRight.setPower(parent.getFront() * br);
     }
 
     public void rotate(int degrees, double power, int timeOutMillis) {
@@ -308,7 +316,7 @@ public class DriveTrain extends Capability {
     public void run() {
         heading.enable();
         while(opModeIsActive() && !isInterrupted()) {
-            //
+            setPowers(powers);
         }
     }
 }
