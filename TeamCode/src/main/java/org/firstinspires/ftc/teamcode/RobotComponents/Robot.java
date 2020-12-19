@@ -7,22 +7,27 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Common.Polygon;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.CV.TFOD;
+import org.firstinspires.ftc.teamcode.RobotComponents.CV.VuforiaRobotLocalizer;
+import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.MovementControllers.MovementController;
 import org.firstinspires.ftc.teamcode.RobotComponents.MovementControllers.PurePursuitController2D;
 import org.firstinspires.ftc.teamcode.RobotComponents.MovementControllers.PurePursuitController3D;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Environment;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Path;
+import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.RotPath;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.SplinePath;
 import org.jetbrains.annotations.NotNull;
 import org.openftc.revextensions2.ExpansionHubEx;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,13 +45,14 @@ public class Robot {
     ExpansionHubEx hub1;
     ExpansionHubEx hub2;
     public DriveTrain driveTrain;
-    public Odometry odometry;
+    public OdometryLocalizer odometry;
     public Imu imu;
     public Sensors sensors;
     public Intake intake;
     public Shooter shooter;
     public WobbleArm wobbleArm;
-    private TFOD vision;
+    private TFOD tfod;
+    public VuforiaRobotLocalizer vuforia;
 
     private MovementController controller;
 
@@ -69,6 +75,7 @@ public class Robot {
     private final double length = RobotConstants.length;
 
     private int stackState = 0;
+    private boolean vufLocInited = false;
 
     FtcDashboard dashboard = null;
 
@@ -94,13 +101,19 @@ public class Robot {
 
 
     public Robot(LinearOpMode op, RobotConstants.ALLIANCES alliance, Environment environment,
-                 int front, int side, double x, double y, float r) {
-        initMembers(op, alliance, environment, front, side, x, y, r);
+                 double x, double y, float r) {
+        initMembers(op, alliance, environment, 1, 1, x, y, r);
     }
 
     public Robot(LinearOpMode op, RobotConstants.ALLIANCES alliance, Environment environment,
-                 int front, int side, double x, double y, double r, boolean noadjust) {
-        initMembers(op, alliance, environment, front, side, x - width / 2, y - length / 2, r);
+                 double x, double y, double r, boolean noadjust) {
+        initMembers(op, alliance, environment, 1, 1, x - width / 2, y - length / 2, r);
+    }
+
+    public Robot(LinearOpMode op, RobotConstants.ALLIANCES alliance, Environment environment) {
+        VectorD readPose = readPose();
+        initMembers(op, alliance, environment, 1, 1, readPose.getX(), readPose.getY(),
+                readPose.getR());
     }
 
     private void initMembers(LinearOpMode op, RobotConstants.ALLIANCES alliance, Environment environment,
@@ -112,7 +125,7 @@ public class Robot {
         // UPDATED side: 1 = normal (+strafe = right if grabber is forward), -1 = reversed (+strafe = left if grabber is forward)
         myOpMode = op;
         driveTrain = new DriveTrain(this);
-        odometry = new Odometry(this, 0, 0);
+        odometry = new OdometryLocalizer(this, 0, 0);
         runtime = new ElapsedTime();
         if(alliance == RobotConstants.ALLIANCES.BLUE) {
             position = new VectorD(-x - width / 2, y + length / 2, r);
@@ -133,7 +146,8 @@ public class Robot {
         intake = new Intake(this);
         shooter = new Shooter(this);
         wobbleArm = new WobbleArm(this);
-        vision = new TFOD();
+        tfod = new TFOD();
+        vuforia = new VuforiaRobotLocalizer();
     }
 
     public double getWidth() {return width;}
@@ -180,6 +194,26 @@ public class Robot {
 
     public VectorD get2DPosition() {
         return clipToXY(position);
+    }
+
+    public VectorD getVuforiaPose() throws Exception {
+        return vuforia.getPose();
+    }
+
+    public double getGoalDist() {
+        try {
+            return (vufLocInited) ? FieldConstants.distToGoal(getVuforiaPose()) : 84;
+        } catch(Exception e) {
+            return 84;
+        }
+    }
+
+    public double getPowerShotDist() {
+        try {
+            return (vufLocInited) ? FieldConstants.distToPowerShot(getVuforiaPose()) : 84;
+        } catch(Exception e) {
+            return 84;
+        }
     }
 
     public void setPosition(VectorD p) {
@@ -233,7 +267,7 @@ public class Robot {
     }
 
 
-    public void INIT(HardwareMap hardwareMap) {
+    public void INIT(HardwareMap hardwareMap, boolean useVuf) {
        while (dashboard == null) {
             FtcDashboard.start();
             dashboard=FtcDashboard.getInstance();
@@ -252,9 +286,16 @@ public class Robot {
         intake.init(hardwareMap);
         shooter.init(hardwareMap);
         wobbleArm.init(hardwareMap);
-        vision.init(hardwareMap);
+        if(useVuf) {
+            vuforia.init(hardwareMap);
+        } else {
+            tfod.init(hardwareMap);
+        }
+        vufLocInited = useVuf;
 
-        displayDash();
+        //
+
+        displayDash(null);
 
         setLedColors(0, 0, 255);
         RobotLog.d("Bruh init");
@@ -284,10 +325,11 @@ public class Robot {
         shooter.teleOp(gamepad);
         wobbleArm.teleOp(gamepad);
         //getMyOpMode().telemetry.update();
+        RobotLog.d("Bruh battery: " + getBatteryVoltage());
     }
 
-    public void detectStack(Telemetry telemetry) {
-        stackState = vision.getStackState(telemetry);
+    public void detectStack() {
+        stackState = tfod.getStackState();
     }
 
     public int getStackState() {return stackState;}
@@ -298,7 +340,13 @@ public class Robot {
 
 
     public void followPath2D(VectorD[] points, double power) {
-        controller = new PurePursuitController2D(this, new Path(points));
+        Path path;
+        if(points[0].hasR()) {
+            path = new RotPath(points);
+        } else {
+            path = new Path(points);
+        }
+        controller = new PurePursuitController2D(this, path);
         controller.followPath(power);
     }
 
@@ -317,8 +365,33 @@ public class Robot {
         controller.followPath(power);
     }
 
+    public void writePose() {
+        File poseXFile = AppUtil.getInstance().getSettingsFile("poseX.txt");
+        ReadWriteFile.writeFile(poseXFile, String.valueOf(getPosition().getX()));
 
+        File poseYFile = AppUtil.getInstance().getSettingsFile("poseY.txt");
+        ReadWriteFile.writeFile(poseYFile, String.valueOf(getPosition().getY()));
 
+        File poseRFile = AppUtil.getInstance().getSettingsFile("poseR.txt");
+        ReadWriteFile.writeFile(poseRFile, String.valueOf(getPosition().getR()));
+    }
+
+    public VectorD readPose() {
+        File poseXFile = AppUtil.getInstance().getSettingsFile("poseX.txt");
+        double x = Double.parseDouble(ReadWriteFile.readFile(poseXFile).trim());
+
+        File poseYFile = AppUtil.getInstance().getSettingsFile("poseY.txt");
+        double y = Double.parseDouble(ReadWriteFile.readFile(poseYFile).trim());
+
+        File poseRFile = AppUtil.getInstance().getSettingsFile("poseR.txt");
+        double r = Double.parseDouble(ReadWriteFile.readFile(poseRFile).trim());
+
+        return new VectorD(x, y, r);
+    }
+
+    //================================================================================
+    //DASHBOARD TELEMETRY METHODS
+    //================================================================================
 
     private void show(TelemetryPacket packet) {
         shape.show(packet, "green");
@@ -474,13 +547,19 @@ public class Robot {
         dashboard.sendTelemetryPacket(packet);
     }
 
-    public void displayDash() {
+    public void displayDash(String[] telem) {
         if(dashboard == null) return;
         TelemetryPacket packet = new TelemetryPacket();
 
         field.show(packet, "red");
 
         this.show(packet);
+
+        if(telem != null) {
+            for (String s : telem) {
+                packet.addLine(s);
+            }
+        }
 
         //breadCrumbs.add(getPosition());
 

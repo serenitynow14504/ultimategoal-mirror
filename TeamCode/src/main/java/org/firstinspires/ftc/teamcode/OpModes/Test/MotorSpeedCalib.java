@@ -22,7 +22,7 @@ public class MotorSpeedCalib extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot = new Robot(this, RobotConstants.ALLIANCES.SOLO, FieldConstants.EMPTY_FIELD, 1, 1, 0,
+        robot = new Robot(this, RobotConstants.ALLIANCES.SOLO, FieldConstants.EMPTY_FIELD, 0,
                 0, 0,
                 true);
         telemetry.addLine("==============================================================");

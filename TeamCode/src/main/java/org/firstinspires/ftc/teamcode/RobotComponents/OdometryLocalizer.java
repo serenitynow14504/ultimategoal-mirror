@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 
 
-public class Odometry extends Capability{
+public class OdometryLocalizer extends Capability{
     private DcMotor encX, encY;
     private boolean active = true;
 
@@ -34,7 +34,7 @@ public class Odometry extends Capability{
 
 
 
-    public Odometry(Robot par, double xp, double yp) {
+    public OdometryLocalizer(Robot par, double xp, double yp) {
         super(par);
         speedTimer = new ElapsedTime();
 

@@ -23,6 +23,8 @@ public class DriveTrain extends Capability {
     //PIDController y = new PIDController(0.0001,0.00000015,0.0005);
     //PIDController r = new PIDController(0.015,0,0.007);//p = 0.01   d = 0.006
 
+    PIDController heading;
+
     private boolean interrupt = false;
 
     private double botRot=0;
@@ -61,6 +63,10 @@ public class DriveTrain extends Capability {
         left2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         right2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        heading = new PIDController(RobotConstants.TRP, RobotConstants.TRI, RobotConstants.TRD);
+        heading.setSetpoint(parent.getTargetRotation());
+        heading.setOutputRange(0, 0.5);  //-power to power?
     }
 
 
@@ -101,8 +107,19 @@ public class DriveTrain extends Capability {
         return newPowers;
     }
 
+    public void setScaledPowersFromGlobalVector(@NonNull VectorD xy) {
+        double robotRot = -Math.toRadians(parent.getPosition().getR());
+        VectorD localVector = new VectorD(
+                (float)(xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
+                (float)(xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
+        );
+
+        setScaledPowersFromComponents(localVector.getX(), localVector.getY(), 0);
+
+    }
+
     public void setScaledPowersFromGlobalVector(@NonNull VectorD xy, double r) {
-        double robotRot = Math.toRadians(parent.getPosition().getR());
+        double robotRot = -Math.toRadians(parent.getPosition().getR());
         VectorD localVector = new VectorD(
                 (float)(xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
                 (float)(xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
@@ -250,7 +267,6 @@ public class DriveTrain extends Capability {
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
         // clockwise (right).
 
-        //parent.odometry.pause();
 
         // rotate until turn is completed.
         timer.reset();
@@ -285,12 +301,12 @@ public class DriveTrain extends Capability {
 
         parent.setTargetRotation(degrees + parent.getTargetRotation());
         sleep(200);
-        //parent.odometry.play();
     }
 
 
     @Override
     public void run() {
+        heading.enable();
         while(opModeIsActive() && !isInterrupted()) {
             //
         }

@@ -41,14 +41,14 @@ public abstract class RobotConstants {
 
     public static final double CENTER_TO_WHEEL_DIST = 6.25;
 
-
-
     public static final float width = 17.5f;
     public static final float length = 18;
-
-
 
     public enum ALLIANCES {
         RED, BLUE, SOLO
     }
+
+    public static final String VUFORIA_KEY =
+            "AWMiTR//////AAABmYXpWn1yJ04SmA7mBd4qGvmN0hVxCBEXwryOr93JrYeogd2OCZFOCT8NQaZbXiGfToGj1u7vNFfE6+RlzaCAxnscNV5ldyA8qvt/ztSlTc7C+vj0ruFzoGU6bft4+hQjQH+KN4z92DpfJUUVhjLfm9gTH9rCNfo23d7wp9nQYSd/MdKcwyHcbBx0iTrWAsbW51BMUVQumnoyc41T/V4WMPVf1OYDdxhj9EhhclrXqPcpgpUJ6v+3+w0ceHQi/VcZGSo4uX7rtLdYSzMZHpKC2ovnYIS5YkGGUWPrIXDb1emSViGU80H6c+V8Zdgn0p1mNm62FIR0BrIlbfDXLjy4ijdhaS4eFdwJadLlariEJi39";
+
 }
