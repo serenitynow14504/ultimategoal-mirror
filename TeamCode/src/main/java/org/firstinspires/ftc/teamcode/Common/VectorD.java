@@ -9,8 +9,8 @@ public class VectorD extends VectorF {
         super((float)x, (float)y);
     }
 
-    public VectorD(double x, double y, double r) {
-        super((float)x, (float)y, (float)r);
+    public VectorD(double x, double y, double z) {
+        super((float)x, (float)y, (float)z);
     }
 
     public double getX() {
@@ -21,11 +21,11 @@ public class VectorD extends VectorF {
         return get(1);
     }
 
-    public double getR() {
+    public double getZ() {
         return get(2);
     }
 
-    public boolean hasR() {
+    public boolean hasZ() {
         return length()>2;
     }
 

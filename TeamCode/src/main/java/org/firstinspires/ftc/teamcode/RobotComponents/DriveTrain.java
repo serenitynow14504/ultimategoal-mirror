@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Common.PIDController;
+import org.firstinspires.ftc.teamcode.Common.Utilities;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Powers.WheelPowers;
@@ -70,27 +71,7 @@ public class DriveTrain extends Capability {
         powers = new WheelPowers();
     }
 
-
-    double[] scalePowers(double fl, double fr, double bl, double br) {
-        double[] newPowers = new double[] {
-                fl, fr, bl, br
-        };
-
-        double max = 0;
-        if(fl > max) max = fl;
-        if(fr > max) max = fr;
-        if(bl > max) max = bl;
-        if(br > max) max = br;
-
-        if(max > 1) {
-            for(int i = 0; i<4; i++) {
-                newPowers[i] /= max;
-            }
-        }
-
-        return newPowers;
-    }
-
+    @Deprecated
     double[] scalePowers(double[] powers) {
         double[] newPowers = powers;
 
@@ -108,19 +89,10 @@ public class DriveTrain extends Capability {
         return newPowers;
     }
 
-    public void setScaledPowersFromGlobalVector(@NonNull VectorD xy) {
-        double robotRot = -Math.toRadians(parent.getPosition().getR());
-        VectorD localVector = new VectorD(
-                (xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
-                (xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
-        );
 
-        setScaledPowersFromComponents(localVector.getX(), localVector.getY(), 0);
-
-    }
-
+    @Deprecated
     public void setScaledPowersFromGlobalVector(@NonNull VectorD xy, double r) {
-        double robotRot = -Math.toRadians(parent.getPosition().getR());
+        double robotRot = -Math.toRadians(parent.getPosition().getZ());
         VectorD localVector = new VectorD(
                 (xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
                 (xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
@@ -129,9 +101,9 @@ public class DriveTrain extends Capability {
         setScaledPowersFromComponents(localVector.getX(), localVector.getY(), r);
 
     }
-
+    @Deprecated
     public void setScaledPowersFromGlobalVector(@NonNull Pair<VectorD, Double> p) {
-        double robotRot = Math.toRadians(parent.getPosition().getR());
+        double robotRot = Math.toRadians(parent.getPosition().getZ());
         VectorD localVector = new VectorD(
                 (p.first.getX() * Math.cos(robotRot) - p.first.getY() * Math.sin(robotRot)),
                 (p.first.getX() * Math.sin(robotRot) + p.first.getY() * Math.cos(robotRot))
@@ -140,7 +112,7 @@ public class DriveTrain extends Capability {
         setScaledPowersFromComponents(localVector.getX(), localVector.get(1), p.second);
 
     }
-
+    @Deprecated
     public void setScaledPowersFromComponents(double xPower, double yPower, double rPower) {
         double[] powers = new double[] {
                 yPower + xPower - rPower,
@@ -150,7 +122,7 @@ public class DriveTrain extends Capability {
         };
         setPowers(scalePowers(powers));
     }
-
+    @Deprecated
     public void setPowersFromComponents(double xPower, double yPower, double rPower) {
         double[] powers = new double[] {
                 yPower + xPower - rPower,
@@ -160,7 +132,7 @@ public class DriveTrain extends Capability {
         };
         setPowers(powers);
     }
-
+    @Deprecated
     public void setScaledTankStrafePowers(double l, double r, double strafe) {
         double[] powers = new double[] {
                 l + strafe,
@@ -170,28 +142,28 @@ public class DriveTrain extends Capability {
         };
         setPowers(scalePowers(powers));
     }
-
+    @Deprecated
     public void setPowers(double speed) {
         fLeft.setPower(speed);
         fRight.setPower(speed);
         bLeft.setPower(speed);
         bRight.setPower(speed);
     }
-
+    @Deprecated
     public void setPowers(double fl, double fr, double bl, double br) {
         fLeft.setPower(fl);
         fRight.setPower(fr);
         bLeft.setPower(bl);
         bRight.setPower(br);
     }
-
+    @Deprecated
     public void setPowers(double[] powers) {
         fLeft.setPower(powers[0]);
         fRight.setPower(powers[1]);
         bLeft.setPower(powers[2]);
         bRight.setPower(powers[3]);
     }
-
+    @Deprecated
     public void setPowers(double l, double r) { //for tank drive
         fLeft.setPower(l);
         fRight.setPower(r);
@@ -207,28 +179,34 @@ public class DriveTrain extends Capability {
     }
 
 
-    void teleOp(Gamepad gamepad) {
+    void teleOp(Gamepad gamepad1, Gamepad gamepad2) {
         double coefficient = 0.525;
-        if(gamepad.a) {
+        if(gamepad1.a) {
             coefficient = 0.3;
-        } else if(gamepad.b) {
+        } else if(gamepad1.b) {
             coefficient = 1;
         }
 
-        double axialPower = -gamepad.left_stick_y * coefficient;
-        double lateralPower = gamepad.left_stick_x * coefficient;
+        double axialPower = -gamepad1.left_stick_y * coefficient;
+        double lateralPower = gamepad1.left_stick_x * coefficient;
 
         double turnPower;
-        if(gamepad.right_trigger > 0) {
-            turnPower = gamepad.right_trigger;
-        } else if (gamepad.left_trigger > 0) {
-            turnPower = -gamepad.left_trigger;
+        if(gamepad1.right_trigger > 0) {
+            turnPower = gamepad1.right_trigger;
+        } else if (gamepad1.left_trigger > 0) {
+            turnPower = -gamepad1.left_trigger;
         } else {
             turnPower = 0.0;
         }
         turnPower *= coefficient * parent.getFront();
 
-        double fl = (axialPower + lateralPower);
+        if(parent.autoAim) {
+            powers.setLocalTrans(new VectorD(lateralPower, axialPower));
+        } else {
+            powers.setFromLocalVector(new VectorD(lateralPower, axialPower, turnPower));
+        }
+
+        /*double fl = (axialPower + lateralPower);
         double fr = (axialPower - lateralPower);
         double bl = (axialPower - lateralPower);
         double br = (axialPower + lateralPower);
@@ -242,7 +220,7 @@ public class DriveTrain extends Capability {
         fLeft.setPower(parent.getFront() * fl);
         fRight.setPower(parent.getFront() * fr);
         bLeft.setPower(parent.getFront() * bl);
-        bRight.setPower(parent.getFront() * br);
+        bRight.setPower(parent.getFront() * br);*/
     }
 
     public void rotate(int degrees, double power, int timeOutMillis) {
@@ -316,6 +294,12 @@ public class DriveTrain extends Capability {
     public void run() {
         heading.enable();
         while(opModeIsActive() && !isInterrupted()) {
+            if(parent.autoAim) {
+                VectorD vector = Utilities.clipToXY(parent.aimPos).subtracted(parent.get2DPosition());
+                double ang = Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) - 90;
+                heading.setSetpoint(ang);
+                powers.setRotation(heading.performPID(parent.getPosition().getZ()));
+            }
             setPowers(powers);
         }
     }

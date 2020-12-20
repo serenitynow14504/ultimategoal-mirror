@@ -80,12 +80,12 @@ public class Shooter extends Capability {
         power = pow;
     }
 
-    public void teleOp(Gamepad gamepad) {
-        if(gamepad.right_bumper && !firePressed) {
+    public void teleOp(Gamepad gamepad1, Gamepad gamepad2) {
+        if(gamepad1.right_bumper && !firePressed) {
             pushRequested = true;
             firePressed = true;
         }
-        if(!gamepad.right_bumper) firePressed = false;
+        if(!gamepad1.right_bumper) firePressed = false;
 
         /*if(gamepad.right_stick_button && !flyWheelPressed) {
             if(power < -0.5) {
@@ -99,7 +99,7 @@ public class Shooter extends Capability {
             flyWheelPressed = false;
         }*/
 
-        if(gamepad.y) {
+        if(gamepad1.y) {
             aimPowerShot();
         } else {
             aimHighGoal();
@@ -113,10 +113,10 @@ public class Shooter extends Capability {
         telemetry.addData("lift power: ", PIDPow);
 
         telemetry.update();
-        if(gamepad.right_stick_y<-0.5) {
+        if(gamepad2.left_stick_y<-0.5) {
             liftUp();
         }
-        if(gamepad.right_stick_y>0.5) {
+        if(gamepad2.left_stick_y>0.5) {
             liftDown();
         }
     }

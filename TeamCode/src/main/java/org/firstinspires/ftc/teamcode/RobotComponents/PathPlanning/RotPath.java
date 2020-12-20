@@ -13,11 +13,11 @@ public class RotPath extends Path {
         points = new VectorD[ps.length];
         segments = new Line[ps.length-1];
         float dist = 0;
-        points[0] = new VectorD(0, ps[0].getR());
+        points[0] = new VectorD(0, ps[0].getZ());
         for(int i = 1; i < ps.length; i++) {
             //dist += path.getSegmentFromArray(i-1).getLength();
             dist += Utilities.distance(ps[i-1], ps[i]);
-            points[i] = new VectorD(dist, ps[i].getR());
+            points[i] = new VectorD(dist, ps[i].getZ());
             segments[i-1] = new Line(points[i-1], points[i],i-1);
         }
     }
