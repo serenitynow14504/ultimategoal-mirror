@@ -23,7 +23,7 @@ public class TeleOp_Ultimate_Goal extends LinearOpMode {
         robot.begin();
 
         while(opModeIsActive()) {
-            robot.teleOp(gamepad1);
+            robot.teleOp(gamepad1, gamepad2);
 
             telemetry.addData("Position: ",
                     "(" + robot.getPosition().getX() + ", " + robot.getPosition().getY() + ")");
@@ -32,7 +32,7 @@ public class TeleOp_Ultimate_Goal extends LinearOpMode {
             try {
                 vP = robot.getVuforiaPose();
                 vPdisp = "Vuforia Position: (" + vP.getX() + ", " + vP.getY() + ", "
-                        + vP.getR() + ")";
+                        + vP.getZ() + ")";
             } catch (Exception e) {
                 vPdisp = "No Vuforia targets visible";
             }

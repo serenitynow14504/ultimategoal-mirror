@@ -70,4 +70,9 @@ public abstract class FieldConstants {
                 return TARGET_ZONE_1;
         }
     }
+
+    public static final VectorD HIGH_GOAL = new VectorD(60, 144, 35.5);
+    public static final VectorD LEFT_POWER_SHOT = new VectorD(28.5, 144, 23);
+    public static final VectorD MID_POWER_SHOT = new VectorD(36, 144, 23);
+    public static final VectorD RIGHT_POWER_SHOT = new VectorD(43.5, 144, 23);
 }

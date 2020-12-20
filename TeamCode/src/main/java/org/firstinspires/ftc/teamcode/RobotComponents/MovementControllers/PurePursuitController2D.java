@@ -104,7 +104,7 @@ public class PurePursuitController2D extends MovementController{
                 r.setSetpoint(((RotPath) path).rotFromParam(closestPathPointParameter));
             }
 
-            double rCorrect = r.performPID(pos.getR());//ny
+            double rCorrect = r.performPID(pos.getZ());//ny
 
 
 

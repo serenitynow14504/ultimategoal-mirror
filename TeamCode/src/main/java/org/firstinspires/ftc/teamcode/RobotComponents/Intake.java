@@ -25,12 +25,12 @@ class Intake extends Capability {
         stuckTime = new ElapsedTime();
     }
 
-    public void teleOp(Gamepad gamepad) {
+    public void teleOp(Gamepad gamepad1, Gamepad gamepad2) {
         //intakeWheels.setPower(gamepad.right_stick_y);
-        if(gamepad.right_stick_y>0.5) {
+        if(gamepad2.left_stick_y>0.5) {
             on();
             parent.setLedColors(0,255,0);
-        } else if(gamepad.right_stick_y<-0.5) {
+        } else if(gamepad2.left_stick_y<-0.5) {
             off();
         } /*else if(gamepad.y) {
             reverse();

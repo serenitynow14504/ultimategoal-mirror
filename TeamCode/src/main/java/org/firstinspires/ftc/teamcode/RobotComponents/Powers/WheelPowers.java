@@ -16,6 +16,23 @@ public class WheelPowers {
     public double bl = 0;//y-x-r
     public double br = 0;//y+x+r
 
+    public void set(double fl, double fr, double bl, double br) {
+        this.fl = fl;
+        this.fr = fr;
+        this.bl = bl;
+        this.br = br;
+
+        scale();
+    }
+
+    public void set(double p) {
+        set(p, p, p, p);
+    }
+
+    public void set(double l, double r) {
+        set(l, r, l, r);
+    }
+
     public void scale() {
         double max = Math.max(fl, Math.max(fr, Math.max(bl, br)));
         if(max>1) {
@@ -28,7 +45,7 @@ public class WheelPowers {
 
     public void setLocalTrans(VectorD v) {
         VectorD current = getLocalVector();
-        setFromLocalVector(new VectorD(v.getX(), v.getY(), current.getR()));
+        setFromLocalVector(new VectorD(v.getX(), v.getY(), current.getZ()));
     }
 
     public void setGlobalTrans(VectorD v, double robotRotDegrees) {
@@ -41,17 +58,15 @@ public class WheelPowers {
     }
 
     public void setFromLocalVector(VectorD v) {
-        fl = v.getY() + v.getX() - v.getR();
-        fl = v.getY() - v.getX() + v.getR();
-        fl = v.getY() - v.getX() - v.getR();
-        fl = v.getY() + v.getX() + v.getR();
-
-        scale();
+        set(v.getY() + v.getX() - v.getZ(),
+            v.getY() - v.getX() + v.getZ(),
+            v.getY() - v.getX() - v.getZ(),
+            v.getY() + v.getX() + v.getZ());
     }
 
     public void setFromGlobalVector(VectorD v, double robotRotDegrees) {
         VectorD rotated = Utilities.rotate(v, -Math.toRadians(robotRotDegrees));
-        setFromLocalVector(new VectorD(rotated.getX(), rotated.getY(), v.getR()));
+        setFromLocalVector(new VectorD(rotated.getX(), rotated.getY(), v.getZ()));
     }
 
     VectorD getLocalVector() {

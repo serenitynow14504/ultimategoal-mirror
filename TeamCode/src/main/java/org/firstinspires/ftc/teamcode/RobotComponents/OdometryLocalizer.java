@@ -197,13 +197,13 @@ public class OdometryLocalizer extends Capability{
         double globalMovey = actualMoveX*Math.sin(t) + actualMoveY*Math.cos(t);
 
 
-        VectorD currentPosition = parent.getEstimatedPosition();
+        VectorD currentPosition = parent.getPosition();
 
         VectorD globalMove = new VectorD((float)globalMoveX, (float)globalMovey);
 
         currentPosition.add(globalMove);
 
-        parent.setEstimatedPosition(currentPosition);
+        parent.setPosition(currentPosition);
     }
 
     double getUpdateSpeed() {
@@ -222,5 +222,5 @@ public class OdometryLocalizer extends Capability{
         oldR = Math.toRadians(parent.imu.heading());
     }
 
-    void teleOp(Gamepad gamepad) {}
+    void teleOp(Gamepad gamepad1, Gamepad gamepad2) {}
 }

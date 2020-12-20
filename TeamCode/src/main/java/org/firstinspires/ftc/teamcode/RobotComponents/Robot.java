@@ -59,13 +59,13 @@ public class Robot {
     private ElapsedTime runtime;
     private LinearOpMode myOpMode;
 
-    private volatile VectorD position, estimatedPosition;
+    private volatile VectorD position;
     private double targetRotation;
     private double rotationOffset;
     private int front;
     private int side;
 
-    private Polygon shape;
+    private Polygon robotShape;
     private Environment field;
 
     private ArrayList<VectorD> breadCrumbs = new ArrayList<>();
@@ -80,6 +80,10 @@ public class Robot {
     FtcDashboard dashboard = null;
 
     RobotConstants.ALLIANCES alliance;
+
+    VectorD aimPos = FieldConstants.HIGH_GOAL;
+    boolean autoAim = false;
+
 
     public enum TaskState {
         IDLE
@@ -113,7 +117,7 @@ public class Robot {
     public Robot(LinearOpMode op, RobotConstants.ALLIANCES alliance, Environment environment) {
         VectorD readPose = readPose();
         initMembers(op, alliance, environment, 1, 1, readPose.getX(), readPose.getY(),
-                readPose.getR());
+                readPose.getZ());
     }
 
     private void initMembers(LinearOpMode op, RobotConstants.ALLIANCES alliance, Environment environment,
@@ -134,7 +138,6 @@ public class Robot {
         }
         updateShape(position);
         field = environment;
-        estimatedPosition = new VectorD(position.get(0), position.get(1));
         targetRotation = position.get(2);
         rotationOffset = targetRotation;
         this.alliance = alliance;
@@ -180,10 +183,6 @@ public class Robot {
         targetRotation = target;
     }
 
-    public boolean amIBusy() {
-        return (driveTrain.amIBusy());
-    }
-
     public double getRuntime() {
         return runtime.milliseconds();
     }
@@ -216,16 +215,25 @@ public class Robot {
         }
     }
 
+
+    public void aim(VectorD pos) {
+        autoAim = true;
+        aimPos = pos;
+    }
+
+    public void aim() {
+        autoAim = true;
+    }
+
+    public void stopAim() {
+        autoAim = false;
+    }
+
     public void setPosition(VectorD p) {
         position = p;
         updateShape(position);
     }
 
-    public VectorD getEstimatedPosition() {return estimatedPosition;}
-
-    public void setEstimatedPosition(VectorD pos) {estimatedPosition = pos;}
-
-    public void setEstimatedPosition(float x, float y) {estimatedPosition = new VectorD(x, y);}
 
     public LinearOpMode getMyOpMode() {
         return myOpMode;
@@ -243,7 +251,7 @@ public class Robot {
     }
 
     private void updateShape(VectorD pos) {
-        double rot = Math.toRadians(pos.getR());
+        double rot = Math.toRadians(pos.getZ());
 
         double x = RobotConstants.width/2;
         double y = RobotConstants.length/2;
@@ -255,11 +263,11 @@ public class Robot {
 
         VectorD[] corners = new VectorD[] {c1, c2, c3, c4};
 
-        shape = new Polygon(corners);
+        robotShape = new Polygon(corners);
     }
 
     public VectorD getEnvironmentRepulsionVector() {
-        return field.repel(shape);
+        return field.repel(robotShape);
     }
 
     public VectorD getEnvironmentRepulsionVectorFromCenter() {
@@ -302,8 +310,10 @@ public class Robot {
     }
 
     public void begin() {
-        odometry.start();
         breadCrumbTimer.reset();
+
+        odometry.start();
+        driveTrain.start();
         intake.start();
         shooter.start();
 
@@ -313,17 +323,28 @@ public class Robot {
 
 
 
-    public void teleOp(@NotNull Gamepad gamepad) {
+    public void teleOp(@NotNull Gamepad gamepad1, Gamepad gamepad2) {
         /*if(gamepad.right_bumper) {
             switchDir(1);
         } else if(gamepad.left_bumper) {
             switchDir(-1);
         }*/
 
-        driveTrain.teleOp(gamepad);
-        intake.teleOp(gamepad);
-        shooter.teleOp(gamepad);
-        wobbleArm.teleOp(gamepad);
+        driveTrain.teleOp(gamepad1, gamepad2);
+        intake.teleOp(gamepad1, gamepad2);
+        shooter.teleOp(gamepad1, gamepad2);
+        wobbleArm.teleOp(gamepad1, gamepad2);
+
+        if(gamepad2.a) {
+            aim(FieldConstants.HIGH_GOAL);
+        } else if(gamepad2.x) {
+            aim(FieldConstants.LEFT_POWER_SHOT);
+        } else if(gamepad2.y) {
+            aim(FieldConstants.MID_POWER_SHOT);
+        } else if(gamepad2.b) {
+            aim(FieldConstants.RIGHT_POWER_SHOT);
+        }
+
         //getMyOpMode().telemetry.update();
         RobotLog.d("Bruh battery: " + getBatteryVoltage());
     }
@@ -341,7 +362,7 @@ public class Robot {
 
     public void followPath2D(VectorD[] points, double power) {
         Path path;
-        if(points[0].hasR()) {
+        if(points[0].hasZ()) {
             path = new RotPath(points);
         } else {
             path = new Path(points);
@@ -373,7 +394,7 @@ public class Robot {
         ReadWriteFile.writeFile(poseYFile, String.valueOf(getPosition().getY()));
 
         File poseRFile = AppUtil.getInstance().getSettingsFile("poseR.txt");
-        ReadWriteFile.writeFile(poseRFile, String.valueOf(getPosition().getR()));
+        ReadWriteFile.writeFile(poseRFile, String.valueOf(getPosition().getZ()));
     }
 
     public VectorD readPose() {
@@ -394,7 +415,7 @@ public class Robot {
     //================================================================================
 
     private void show(TelemetryPacket packet) {
-        shape.show(packet, "green");
+        robotShape.show(packet, "green");
         double rot = Math.toRadians(position.get(2));
         double plusRadius = 3;
         packet.fieldOverlay().setStroke("green").strokeLine(

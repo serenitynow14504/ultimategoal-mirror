@@ -17,5 +17,5 @@ public class Sensors extends Capability {
 
     }
 
-    public void teleOp(Gamepad gamepad) {}
+    public void teleOp(Gamepad gamepad1, Gamepad gamepad2) {}
 }

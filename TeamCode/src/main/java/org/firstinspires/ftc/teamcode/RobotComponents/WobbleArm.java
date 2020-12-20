@@ -21,17 +21,17 @@ public class WobbleArm extends Capability {
         pin = hardwareMap.get(Servo.class, "grabber");
     }
 
-    public void teleOp(@NonNull Gamepad gamepad) {
-        if(!gamepad.left_bumper) {
-            if (gamepad.dpad_up) {
+    public void teleOp(@NonNull Gamepad gamepad1, Gamepad gamepad2) {
+        if(!gamepad1.left_bumper) {
+            if (gamepad1.dpad_up) {
                 arm(true);
-            } else if (gamepad.dpad_down) {
+            } else if (gamepad1.dpad_down) {
                 arm(false);
             }
         } else {
-            if (gamepad.dpad_up) {
+            if (gamepad1.dpad_up) {
                 grabber(true);
-            } else if (gamepad.dpad_down) {
+            } else if (gamepad1.dpad_down) {
                 grabber(false);
             }
         }
