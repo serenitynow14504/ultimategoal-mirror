@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.RobotComponents.Constants;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public abstract class RobotConstants {
     //odometry
     public static final double ODO_ENCODER_COUNTS_PER_REV = 8192;
@@ -33,9 +36,9 @@ public abstract class RobotConstants {
     public static final double lookAheadConstant = 18.0;
 
 
-    public static final double COUNTS_PER_MOTOR_REV = 2240;    // eg: TETRIX Motor Encoder
+    public static final double COUNTS_PER_MOTOR_REV = 2240;
     public static final double DRIVE_GEAR_REDUCTION = 2.0;
-    public static final double WHEEL_DIAMETER_INCHES = 100 / 25.4;     // For figuring circumference
+    public static final double WHEEL_DIAMETER_INCHES = 100 / 25.4;
     public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
 
@@ -47,6 +50,8 @@ public abstract class RobotConstants {
     public enum ALLIANCES {
         RED, BLUE, SOLO
     }
+
+    public static double SHOOTING_OFFSET_ANGLE = 20;
 
     public static final String VUFORIA_KEY =
             "AWMiTR//////AAABmYXpWn1yJ04SmA7mBd4qGvmN0hVxCBEXwryOr93JrYeogd2OCZFOCT8NQaZbXiGfToGj1u7vNFfE6+RlzaCAxnscNV5ldyA8qvt/ztSlTc7C+vj0ruFzoGU6bft4+hQjQH+KN4z92DpfJUUVhjLfm9gTH9rCNfo23d7wp9nQYSd/MdKcwyHcbBx0iTrWAsbW51BMUVQumnoyc41T/V4WMPVf1OYDdxhj9EhhclrXqPcpgpUJ6v+3+w0ceHQi/VcZGSo4uX7rtLdYSzMZHpKC2ovnYIS5YkGGUWPrIXDb1emSViGU80H6c+V8Zdgn0p1mNm62FIR0BrIlbfDXLjy4ijdhaS4eFdwJadLlariEJi39";

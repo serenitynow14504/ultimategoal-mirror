@@ -296,7 +296,7 @@ public class DriveTrain extends Capability {
         while(opModeIsActive() && !isInterrupted()) {
             if(parent.autoAim) {
                 VectorD vector = Utilities.clipToXY(parent.aimPos).subtracted(parent.get2DPosition());
-                double ang = Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) - 90;
+                double ang = Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) - 90 + RobotConstants.SHOOTING_OFFSET_ANGLE;
                 heading.setSetpoint(ang);
                 powers.setRotation(heading.performPID(parent.getPosition().getZ()));
             }
