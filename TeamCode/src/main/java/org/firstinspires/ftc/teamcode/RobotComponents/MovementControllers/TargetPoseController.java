@@ -16,7 +16,7 @@ import static java.lang.Math.sqrt;
 
 class TargetPoseController extends MovementController {
     public TargetPoseController(Robot r, VectorD target) {
-        super(r, new Path(new VectorD[] {r.get2DPosition(), Utilities.clipToXY(target)}));
+        super(r, new Path(new VectorD[] {r.getPosition(), Utilities.clipToXY(target)}));
     }
 
     public void followPath(double power) {
@@ -33,7 +33,7 @@ class TargetPoseController extends MovementController {
         double closestPathPointParameter;
         timer.reset();
         do {
-            VectorD pos = robot.getPosition();
+            VectorD pos = robot.getPose();
 
             path.calculateClosestData(pos);
 

@@ -22,7 +22,7 @@ public class odoTest extends LinearOpMode {
         robot.begin();
 
         while(opModeIsActive()) {
-            VectorD pos = robot.getPosition();
+            VectorD pos = robot.getPose();
             telemetry.addData("position:  ", pos.toString());
             //telemetry.addData("encX pos = ", robot.odometry.getEncPos(0));
             //telemetry.addData("encY pos = ", robot.odometry.getEncPos(1));

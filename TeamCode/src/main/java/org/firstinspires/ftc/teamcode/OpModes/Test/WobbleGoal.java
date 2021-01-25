@@ -34,7 +34,7 @@ public class WobbleGoal extends LinearOpMode {
 
 
         VectorD[] path = new VectorD[] {
-                robot.getPosition(),
+                robot.getPose(),
                 new VectorD(76, 40),
                 target
         };

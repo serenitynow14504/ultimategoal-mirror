@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.RobotComponents.Constants;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.teamcode.Common.VectorD;
+
 @Config
 public abstract class RobotConstants {
     //odometry
@@ -55,5 +57,25 @@ public abstract class RobotConstants {
 
     public static final String VUFORIA_KEY =
             "AWMiTR//////AAABmYXpWn1yJ04SmA7mBd4qGvmN0hVxCBEXwryOr93JrYeogd2OCZFOCT8NQaZbXiGfToGj1u7vNFfE6+RlzaCAxnscNV5ldyA8qvt/ztSlTc7C+vj0ruFzoGU6bft4+hQjQH+KN4z92DpfJUUVhjLfm9gTH9rCNfo23d7wp9nQYSd/MdKcwyHcbBx0iTrWAsbW51BMUVQumnoyc41T/V4WMPVf1OYDdxhj9EhhclrXqPcpgpUJ6v+3+w0ceHQi/VcZGSo4uX7rtLdYSzMZHpKC2ovnYIS5YkGGUWPrIXDb1emSViGU80H6c+V8Zdgn0p1mNm62FIR0BrIlbfDXLjy4ijdhaS4eFdwJadLlariEJi39";
+
+
+    public static final VectorD GRABBER_POS = new VectorD(-12, 4);//MEASURE PLS
+    public static final VectorD INTAKE_POS = new VectorD(0, 8);//MEASURE PLS
+    public static final VectorD CAMERA_POS = new VectorD(0, 9, 6.5);
+
+    //==============CAMERA PARAMS==================\\
+
+    public static final int SCREEN_WIDTH = 640;
+    public static final int SCREEN_HEIGHT = 480;
+    public static final double FOCAL_LENGTH = 822.317;
+    public static final VectorD PRINCIPLE_POINT = new VectorD(319.495, 242.502);
+    public static final double K1 = -0.0449369;
+    public static final double K2 = 1.17277;
+    public static final double P1 = 0;
+    public static final double P2 = 0;
+    public static final double K3 = -3.63244;
+    public static final double K4 = 0;
+    public static final double K5 = 0;
+    public static final double K6 = 0;
 
 }

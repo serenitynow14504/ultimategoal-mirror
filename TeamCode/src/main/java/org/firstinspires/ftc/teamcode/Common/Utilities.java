@@ -80,6 +80,10 @@ public class Utilities {
         return v.multiplied((double)1/v.magnitude());
     }
 
+    public static VectorD addZ(VectorD v, double z) {
+        return new VectorD(v.getX(), v.getY(), z);
+    }
+
     public static VectorD setMagnitude(VectorD v, double mag) {
         return normalize(v).multiplied(mag);
     }

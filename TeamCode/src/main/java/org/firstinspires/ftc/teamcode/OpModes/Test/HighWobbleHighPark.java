@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
 @Autonomous
-public class PowerWobblePark extends LinearOpMode {
+public class HighWobbleHighPark extends LinearOpMode {
     Robot robot;
 
     @Override
@@ -18,8 +18,6 @@ public class PowerWobblePark extends LinearOpMode {
                 72-RobotConstants.width, 0, 0);
 
         robot.INIT(hardwareMap, false);
-
-
 
         robot.wobbleArm.grabber(true);
 
@@ -34,16 +32,16 @@ public class PowerWobblePark extends LinearOpMode {
         waitForStart();
         robot.begin();
 
-        robot.shooter.aimPowerShot();
+        int stackState = robot.getStackState();
 
-        VectorD target = FieldConstants.getTargetZone(robot.getStackState());
+        VectorD target = FieldConstants.getTargetZone(stackState);
         VectorD targetPose = new VectorD(target.getX(), target.getY() - 18, -90);
 
 
         VectorD[] path = new VectorD[] {
                 robot.getPose(),
-                new VectorD(84, 36, 0),
-                new VectorD(84, 66, 47)
+                new VectorD(36, 40, 0),
+                new VectorD(36, 60, -1)
         };
 
         robot.shooter.setPower(-1);
@@ -54,10 +52,8 @@ public class PowerWobblePark extends LinearOpMode {
 
         robot.shooter.push();
         sleep(500);
-        robot.driveTrain.rotate(7, 0.3, 1500);
         robot.shooter.push();
         sleep(500);
-        robot.driveTrain.rotate(7, 0.3, 1500);
         robot.shooter.push();
 
         robot.shooter.setPower(0);
@@ -69,9 +65,32 @@ public class PowerWobblePark extends LinearOpMode {
 
         robot.followPath2D(path, 0.6);
 
+        robot.lift.liftDown();
+
         robot.wobbleArm.grabber(false);
 
         sleep(500);
+
+        if(stackState == 1) {
+            robot.intake.on();
+            robot.posOnRobotToGlobalPos(RobotConstants.INTAKE_POS, FieldConstants.RING_STACK);
+            sleep(1000);
+            robot.intake.off();
+            robot.shooter.liftUp();
+
+            path = new VectorD[] {
+                    robot.getPose(),
+                    new VectorD(36, 60, -1)
+            };
+
+            sleep(200);
+
+            robot.followPath2D(path, 0.6);
+
+            robot.shooter.push();
+
+            robot.shooter.setPower(0);
+        }
 
         path = new VectorD[] {
                 robot.getPose(),

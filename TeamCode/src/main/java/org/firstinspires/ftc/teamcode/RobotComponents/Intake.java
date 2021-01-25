@@ -9,11 +9,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 
-class Intake extends Capability {
+public class Intake extends Capability {
     private ExpansionHubMotor intakeWheels;
     private DistanceSensor stuckSensor;
     private final double CURRENT_THRESHOLD = 10;
     private ElapsedTime stuckTime;
+    private boolean on = false;
 
     public Intake(Robot parent) {
         super(parent);

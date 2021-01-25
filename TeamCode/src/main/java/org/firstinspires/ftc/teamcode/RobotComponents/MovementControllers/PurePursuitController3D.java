@@ -51,7 +51,7 @@ public class PurePursuitController3D extends MovementController {
         double closestPathPointParameter;
         timer.reset();
         do {
-            VectorD pos = robot.getPosition();
+            VectorD pos = robot.getPose();
 
             path.calculateClosestData(pos);
 

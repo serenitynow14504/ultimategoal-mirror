@@ -37,7 +37,7 @@ public class HighWobblePark extends LinearOpMode {
 
 
         VectorD[] path = new VectorD[] {
-                robot.getPosition(),
+                robot.getPose(),
                 new VectorD(36, 40, 0),
                 new VectorD(36, 60, -1)
         };
@@ -57,7 +57,7 @@ public class HighWobblePark extends LinearOpMode {
         robot.shooter.setPower(0);
 
         path = new VectorD[] {
-                robot.getPosition(),
+                robot.getPose(),
                 targetPose
         };
 
@@ -68,7 +68,7 @@ public class HighWobblePark extends LinearOpMode {
         sleep(500);
 
         path = new VectorD[] {
-                robot.getPosition(),
+                robot.getPose(),
                 new VectorD(60, 84, -90)
         };
 
