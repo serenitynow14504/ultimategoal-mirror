@@ -124,11 +124,11 @@ public class VuforiaRobotLocalizer {
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 9.0f * mmPerInch;   // eg: Camera is 4 Inches
+        final float CAMERA_FORWARD_DISPLACEMENT  = (float)RobotConstants.CAMERA_POS.getY() * mmPerInch;   // eg: Camera is 4 Inches
         // in front of robot-center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 6.5f * mmPerInch;   // eg: Camera is 8 Inches
+        final float CAMERA_VERTICAL_DISPLACEMENT = (float)RobotConstants.CAMERA_POS.getZ() * mmPerInch;   // eg: Camera is 8 Inches
         // above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
+        final float CAMERA_LEFT_DISPLACEMENT     = (float)RobotConstants.CAMERA_POS.getX();     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)

@@ -26,7 +26,7 @@ public class TeleOp_Ultimate_Goal extends LinearOpMode {
             robot.teleOp(gamepad1, gamepad2);
 
             telemetry.addData("Position: ",
-                    "(" + robot.getPosition().getX() + ", " + robot.getPosition().getY() + ")");
+                    "(" + robot.getPose().getX() + ", " + robot.getPose().getY() + ")");
             VectorD vP;
             String vPdisp = "";
             try {

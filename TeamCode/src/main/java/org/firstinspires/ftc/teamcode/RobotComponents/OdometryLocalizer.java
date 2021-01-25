@@ -159,7 +159,7 @@ public class OdometryLocalizer extends Capability{
             finalY = yEncodersOld + moveDist * Math.sin(thetaOld);
         }
 
-        VectorD currentPos = parent.getPosition();
+        VectorD currentPos = parent.getPose();
         VectorD newPos = new VectorD((float)(currentPos.get(0) + finalX),
                 (float)(currentPos.get(1) + finalY), (float)Math.toDegrees(newR));
         parent.setPosition(newPos);
@@ -180,7 +180,7 @@ public class OdometryLocalizer extends Capability{
         //double finalX = xInches*Math.cos(newR) - yInches*Math.sin(newR);
         //double finalY = yInches*Math.cos(newR) + xInches*Math.sin(newR);
 
-        VectorD currentPos = parent.getPosition();
+        VectorD currentPos = parent.getPose();
         VectorD newPos = new VectorD((float)(currentPos.get(0) + finalX),
                 (float)(currentPos.get(1) + finalY), (float)Math.toDegrees(newR));
 
@@ -197,7 +197,7 @@ public class OdometryLocalizer extends Capability{
         double globalMovey = actualMoveX*Math.sin(t) + actualMoveY*Math.cos(t);
 
 
-        VectorD currentPosition = parent.getPosition();
+        VectorD currentPosition = parent.getPose();
 
         VectorD globalMove = new VectorD((float)globalMoveX, (float)globalMovey);
 

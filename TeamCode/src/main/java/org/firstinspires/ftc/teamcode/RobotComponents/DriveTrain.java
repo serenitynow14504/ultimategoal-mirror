@@ -92,7 +92,7 @@ public class DriveTrain extends Capability {
 
     @Deprecated
     public void setScaledPowersFromGlobalVector(@NonNull VectorD xy, double r) {
-        double robotRot = -Math.toRadians(parent.getPosition().getZ());
+        double robotRot = -Math.toRadians(parent.getPose().getZ());
         VectorD localVector = new VectorD(
                 (xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
                 (xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
@@ -103,7 +103,7 @@ public class DriveTrain extends Capability {
     }
     @Deprecated
     public void setScaledPowersFromGlobalVector(@NonNull Pair<VectorD, Double> p) {
-        double robotRot = Math.toRadians(parent.getPosition().getZ());
+        double robotRot = Math.toRadians(parent.getPose().getZ());
         VectorD localVector = new VectorD(
                 (p.first.getX() * Math.cos(robotRot) - p.first.getY() * Math.sin(robotRot)),
                 (p.first.getX() * Math.sin(robotRot) + p.first.getY() * Math.cos(robotRot))
@@ -295,10 +295,10 @@ public class DriveTrain extends Capability {
         heading.enable();
         while(opModeIsActive() && !isInterrupted()) {
             if(parent.autoAim) {
-                VectorD vector = Utilities.clipToXY(parent.aimPos).subtracted(parent.get2DPosition());
+                VectorD vector = Utilities.clipToXY(parent.aimPos).subtracted(parent.getPosition());
                 double ang = Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) - 90 + RobotConstants.SHOOTING_OFFSET_ANGLE;
                 heading.setSetpoint(ang);
-                powers.setRotation(heading.performPID(parent.getPosition().getZ()));
+                powers.setRotation(heading.performPID(parent.getPose().getZ()));
             }
             setPowers(powers);
         }

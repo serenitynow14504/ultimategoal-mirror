@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.RobotComponents.Constants;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.Common.Utilities;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Environment;
 import org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Obstacle;
@@ -21,17 +20,6 @@ public abstract class FieldConstants {
             new VectorD(81, 18),
             new VectorD(81, 0)}, 3, 3, 1);
 
-    public static VectorD GOAL_POS = new VectorD(72, 144);
-    public static VectorD POWER_SHOT_POS = new VectorD(36, 144);
-
-    public static double distToPowerShot(VectorD pos) {
-        return Utilities.distance(pos, POWER_SHOT_POS);
-    }
-
-    public static double distToGoal(VectorD pos) {
-        return Utilities.distance(pos, GOAL_POS);
-    }
-
     public static double x1 = -15;
     public static double y1 = 24;
     public static double x2 = 0;
@@ -43,9 +31,9 @@ public abstract class FieldConstants {
     public static double maxRepelPow = 28;
 
     public static final Obstacle TEST_OBSTACLE = new Obstacle(new VectorD[] {
-            new VectorD((float)x1, (float)y1),
-            new VectorD((float)x2, (float)y2),
-            new VectorD((float)x3, (float)y3)}, 13, maxRepelDist, maxRepelPow);
+            new VectorD(x1, y1),
+            new VectorD(x2, y2),
+            new VectorD(x3, y3)}, 13, maxRepelDist, maxRepelPow);
 
     public static final Environment TEST = new Environment(new Obstacle[] {TEST_OBSTACLE});
 
@@ -75,4 +63,8 @@ public abstract class FieldConstants {
     public static final VectorD LEFT_POWER_SHOT = new VectorD(28.5, 144, 23);
     public static final VectorD MID_POWER_SHOT = new VectorD(36, 144, 23);
     public static final VectorD RIGHT_POWER_SHOT = new VectorD(43.5, 144, 23);
+
+    public static final VectorD RING_STACK = new VectorD(60, 48);
+    public static final VectorD LEFT_WOBBLE = new VectorD(48, 28);
+    public static final VectorD RIGHT_WOBBLE = new VectorD(72, 28);
 }

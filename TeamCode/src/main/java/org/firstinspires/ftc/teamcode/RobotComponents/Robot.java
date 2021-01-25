@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Common.Polygon;
+import org.firstinspires.ftc.teamcode.Common.Utilities;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.CV.TFOD;
 import org.firstinspires.ftc.teamcode.RobotComponents.CV.VuforiaRobotLocalizer;
@@ -187,11 +188,11 @@ public class Robot {
         return runtime.milliseconds();
     }
 
-    public VectorD getPosition() {
+    public VectorD getPose() {
         return duplicate(position);
     }
 
-    public VectorD get2DPosition() {
+    public VectorD getPosition() {
         return clipToXY(position);
     }
 
@@ -199,25 +200,16 @@ public class Robot {
         return vuforia.getPose();
     }
 
-    public double getGoalDist() {
+    public double getAimTargetDist() {
         try {
-            return (vufLocInited) ? FieldConstants.distToGoal(getVuforiaPose()) : 84;
-        } catch(Exception e) {
-            return 84;
-        }
-    }
-
-    public double getPowerShotDist() {
-        try {
-            return (vufLocInited) ? FieldConstants.distToPowerShot(getVuforiaPose()) : 84;
+            return (vufLocInited) ? Utilities.distance(getVuforiaPose(), aimPos) : 84;
         } catch(Exception e) {
             return 84;
         }
     }
 
 
-    public void aim(VectorD pos) {
-        autoAim = true;
+    public void setAimPos(VectorD pos) {
         aimPos = pos;
     }
 
@@ -271,7 +263,7 @@ public class Robot {
     }
 
     public VectorD getEnvironmentRepulsionVectorFromCenter() {
-        return field.repel(get2DPosition());
+        return field.repel(getPosition());
     }
 
 
@@ -306,7 +298,7 @@ public class Robot {
         displayDash(null);
 
         setLedColors(0, 0, 255);
-        RobotLog.d("Bruh init");
+        Utilities.log("init");
     }
 
     public void begin() {
@@ -324,25 +316,25 @@ public class Robot {
 
 
     public void teleOp(@NotNull Gamepad gamepad1, Gamepad gamepad2) {
-        /*if(gamepad.right_bumper) {
-            switchDir(1);
-        } else if(gamepad.left_bumper) {
-            switchDir(-1);
-        }*/
-
         driveTrain.teleOp(gamepad1, gamepad2);
         intake.teleOp(gamepad1, gamepad2);
         shooter.teleOp(gamepad1, gamepad2);
         wobbleArm.teleOp(gamepad1, gamepad2);
 
+        if(gamepad2.left_stick_y>0.5) {
+            stopAim();
+        } else if(gamepad2.left_stick_y<-0.5) {
+            aim();
+        }
+
         if(gamepad2.a) {
-            aim(FieldConstants.HIGH_GOAL);
+            setAimPos(FieldConstants.HIGH_GOAL);
         } else if(gamepad2.x) {
-            aim(FieldConstants.LEFT_POWER_SHOT);
+            setAimPos(FieldConstants.LEFT_POWER_SHOT);
         } else if(gamepad2.y) {
-            aim(FieldConstants.MID_POWER_SHOT);
+            setAimPos(FieldConstants.MID_POWER_SHOT);
         } else if(gamepad2.b) {
-            aim(FieldConstants.RIGHT_POWER_SHOT);
+            setAimPos(FieldConstants.RIGHT_POWER_SHOT);
         }
 
         //getMyOpMode().telemetry.update();
@@ -350,7 +342,7 @@ public class Robot {
     }
 
     public void detectStack() {
-        stackState = tfod.getStackState();
+        stackState = tfod.detectStack();
     }
 
     public int getStackState() {return stackState;}
@@ -386,15 +378,30 @@ public class Robot {
         controller.followPath(power);
     }
 
+    public void posOnRobotToGlobalPos(VectorD posOnRobot, VectorD targetPos) {
+        VectorD pos = getPosition();
+        VectorD delta = targetPos.subtracted(pos);
+        VectorD end = Utilities.setMagnitude(delta, delta.magnitude()-posOnRobot.magnitude());
+        VectorD rotClamp = Utilities.setMagnitude(delta, end.magnitude()*0.5);
+        double newHeading = Math.toDegrees(Math.atan2(delta.getY(), delta.getX())) - Math.toDegrees(Math.atan2(posOnRobot.getY(), posOnRobot.getX()));
+        VectorD[] points = {getPose(), Utilities.addZ(rotClamp.added(pos), newHeading), Utilities.addZ(end.added(pos), newHeading)};
+        followPath2D(points, 0.7);
+    }
+
+    public void translate(VectorD translation, double power) {
+        VectorD[] points = {getPosition(), Utilities.rotate(translation, -getPose().getZ()).added(getPosition())};
+        followPath2D(points, power);
+    }
+
     public void writePose() {
         File poseXFile = AppUtil.getInstance().getSettingsFile("poseX.txt");
-        ReadWriteFile.writeFile(poseXFile, String.valueOf(getPosition().getX()));
+        ReadWriteFile.writeFile(poseXFile, String.valueOf(getPose().getX()));
 
         File poseYFile = AppUtil.getInstance().getSettingsFile("poseY.txt");
-        ReadWriteFile.writeFile(poseYFile, String.valueOf(getPosition().getY()));
+        ReadWriteFile.writeFile(poseYFile, String.valueOf(getPose().getY()));
 
         File poseRFile = AppUtil.getInstance().getSettingsFile("poseR.txt");
-        ReadWriteFile.writeFile(poseRFile, String.valueOf(getPosition().getZ()));
+        ReadWriteFile.writeFile(poseRFile, String.valueOf(getPose().getZ()));
     }
 
     public VectorD readPose() {
@@ -472,15 +479,15 @@ public class Robot {
 
         this.show(packet);
 
-        drawArrow(packet, get2DPosition(), get2DPosition().added(followVec), "orange");
-        drawArrow(packet, get2DPosition(), get2DPosition().added(toPathVec), "blue");
-        drawArrow(packet, get2DPosition(), get2DPosition().added(repulsionVec), "red");
+        drawArrow(packet, getPosition(), getPosition().added(followVec), "orange");
+        drawArrow(packet, getPosition(), getPosition().added(toPathVec), "blue");
+        drawArrow(packet, getPosition(), getPosition().added(repulsionVec), "red");
 
-        drawArrow(packet, get2DPosition(), get2DPosition().added(finalVec.multiplied(12d)),
+        drawArrow(packet, getPosition(), getPosition().added(finalVec.multiplied(12d)),
                 "black");
 
         if(breadCrumbTimer.milliseconds() > 200) {
-            breadCrumbs.add(getPosition());
+            breadCrumbs.add(getPose());
             breadCrumbTimer.reset();
         }
 
@@ -514,10 +521,10 @@ public class Robot {
 
         //Utilities.drawArrow(packet, get2DPosition(), get2DPosition().added(toPathVec), "blue");
         drawLocalArrow(packet, new VectorD(0, 0), new VectorD(-(float)toPath*12, 0),
-                getPosition(), "blue");
+                getPose(), "blue");
         if(arcCenter == null) {
-            packet.fieldOverlay().setStroke("orange").strokeLine(get2DPosition().get(0),
-                    get2DPosition().get(1), lookAheadPoint.get(0), lookAheadPoint.get(1));
+            packet.fieldOverlay().setStroke("orange").strokeLine(getPosition().get(0),
+                    getPosition().get(1), lookAheadPoint.get(0), lookAheadPoint.get(1));
         } else {
             //Utilities.drawArc(packet, get2DPosition(), lookAheadPoint, arcCenter, 10, "orange");
             packet.fieldOverlay().setStroke("orange").strokeCircle(arcCenter.get(0),
@@ -528,7 +535,7 @@ public class Robot {
 
 
         if(breadCrumbTimer.milliseconds() > 200) {
-            breadCrumbs.add(getPosition());
+            breadCrumbs.add(getPose());
             breadCrumbTimer.reset();
         }
 
@@ -561,7 +568,7 @@ public class Robot {
         this.show(packet);
 
         if(breadCrumbTimer.milliseconds() > 200) {
-            breadCrumbs.add(getPosition());
+            breadCrumbs.add(getPose());
             breadCrumbTimer.reset();
         }
 
