@@ -63,5 +63,8 @@ public abstract class Capability extends Thread {
     }
 
     abstract void teleOp(Gamepad gamepad1, Gamepad gamepad2);
+    void debugOp(Gamepad gamepad1, Gamepad gamepad2) {
+        teleOp(gamepad1, gamepad2);
+    }
     abstract void init(HardwareMap hardrwareMap);
 }

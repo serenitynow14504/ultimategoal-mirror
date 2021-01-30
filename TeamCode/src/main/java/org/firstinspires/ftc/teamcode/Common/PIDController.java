@@ -292,6 +292,13 @@ public class PIDController
     }
 
     /**
+     * Is the PIDController running/enabled
+     */
+    public boolean isEnabled() {
+        return m_enabled;
+    }
+
+    /**
      * Reset the previous error,, the integral term, and disable the controller.
      */
     public void reset()

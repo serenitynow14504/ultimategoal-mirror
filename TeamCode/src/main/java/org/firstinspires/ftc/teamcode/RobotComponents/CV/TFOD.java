@@ -64,10 +64,10 @@ public class TFOD {
         List<Recognition> recognitions = tfod.getUpdatedRecognitions();
         if (recognitions != null && recognitions.size() > 0) {
             for(Recognition recognition : recognitions) {
-                VectorD point = new VectorD(recognition.estimateAngleToObject())
+                //VectorD point = new VectorD(recognition.));
             }
         }
-        return 0;
+        return null;
     }
 
     public void init(HardwareMap hardwareMap) {
@@ -124,6 +124,7 @@ public class TFOD {
         //yp = y/z
 
         //step 4: orient to robot pose
+        return null;
     }
 
 }

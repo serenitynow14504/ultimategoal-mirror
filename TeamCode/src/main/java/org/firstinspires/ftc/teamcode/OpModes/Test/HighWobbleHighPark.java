@@ -76,7 +76,7 @@ public class HighWobbleHighPark extends LinearOpMode {
             robot.posOnRobotToGlobalPos(RobotConstants.INTAKE_POS, FieldConstants.RING_STACK);
             sleep(1000);
             robot.intake.off();
-            robot.shooter.liftUp();
+            robot.lift.liftUp();
 
             path = new VectorD[] {
                     robot.getPose(),

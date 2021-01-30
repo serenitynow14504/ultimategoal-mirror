@@ -48,9 +48,9 @@ public class Robot {
     public DriveTrain driveTrain;
     public OdometryLocalizer odometry;
     public Imu imu;
-    public Sensors sensors;
     public Intake intake;
     public Shooter shooter;
+    public Lift lift;
     public WobbleArm wobbleArm;
     private TFOD tfod;
     public VuforiaRobotLocalizer vuforia;
@@ -145,10 +145,10 @@ public class Robot {
         this.front = front;
         this.side = side;
 
-        sensors = new Sensors(this);
         //taskMachine = new TaskMachine(this, driveTrain, new TaskMap[] {});
         intake = new Intake(this);
         shooter = new Shooter(this);
+        lift = new Lift(this);
         wobbleArm = new WobbleArm(this);
         tfod = new TFOD();
         vuforia = new VuforiaRobotLocalizer();
@@ -268,7 +268,7 @@ public class Robot {
 
 
     public void INIT(HardwareMap hardwareMap, boolean useVuf) {
-       while (dashboard == null) {
+        while (dashboard == null) {
             FtcDashboard.start();
             dashboard=FtcDashboard.getInstance();
         }
@@ -277,15 +277,24 @@ public class Robot {
         hub1 = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 1");
         hub2 = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
 
-
+        setLedColors(128, 0, 0);
+        Utilities.log("hubs init");
 
         imu = new Imu(myOpMode.hardwareMap.get(BNO055IMU.class, "imu"), this);
+        Utilities.log("imu init");
         driveTrain.init(hardwareMap);
+        Utilities.log("dt init");
         odometry.init(hardwareMap);
-        sensors.init(hardwareMap);
+        Utilities.log("odo init");
         intake.init(hardwareMap);
+        Utilities.log("intake init");
         shooter.init(hardwareMap);
+        Utilities.log("shoot init");
+        lift.init(hardwareMap);
+        Utilities.log("lift init");
         wobbleArm.init(hardwareMap);
+        Utilities.log("arm init");
+
         if(useVuf) {
             vuforia.init(hardwareMap);
         } else {
@@ -308,9 +317,10 @@ public class Robot {
         driveTrain.start();
         intake.start();
         shooter.start();
+        lift.start();
 
         setLedColors(0, 255, 0);
-        RobotLog.d("Bruh begin");
+        Utilities.log("begun");
     }
 
 
@@ -318,14 +328,38 @@ public class Robot {
     public void teleOp(@NotNull Gamepad gamepad1, Gamepad gamepad2) {
         driveTrain.teleOp(gamepad1, gamepad2);
         intake.teleOp(gamepad1, gamepad2);
-        shooter.teleOp(gamepad1, gamepad2);
+        //shooter.teleOp(gamepad1, gamepad2);
         wobbleArm.teleOp(gamepad1, gamepad2);
+        lift.teleOp(gamepad1, gamepad2);
 
-        if(gamepad2.left_stick_y>0.5) {
+        if(gamepad2.right_stick_y>0.5) {
             stopAim();
-        } else if(gamepad2.left_stick_y<-0.5) {
+        } else if(gamepad2.right_stick_y<-0.5) {
             aim();
         }
+
+        if(gamepad2.a) {
+            setAimPos(FieldConstants.HIGH_GOAL);
+        } else if(gamepad2.x) {
+            setAimPos(FieldConstants.LEFT_POWER_SHOT);
+        } else if(gamepad2.y) {
+            setAimPos(FieldConstants.MID_POWER_SHOT);
+        } else if(gamepad2.b) {
+            setAimPos(FieldConstants.RIGHT_POWER_SHOT);
+        }
+
+        //getMyOpMode().telemetry.update();
+        RobotLog.d("Bruh battery: " + getBatteryVoltage());
+    }
+
+    public void debugOp(@NotNull Gamepad gamepad1, Gamepad gamepad2) {
+        driveTrain.debugOp(gamepad1, gamepad2);
+        intake.debugOp(gamepad1, gamepad2);
+        shooter.debugOp(gamepad1, gamepad2);
+        wobbleArm.debugOp(gamepad1, gamepad2);
+        lift.debugOp(gamepad1, gamepad2);
+
+        stopAim();
 
         if(gamepad2.a) {
             setAimPos(FieldConstants.HIGH_GOAL);
