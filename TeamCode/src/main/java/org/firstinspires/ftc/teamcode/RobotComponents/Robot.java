@@ -328,13 +328,19 @@ public class Robot {
     public void teleOp(@NotNull Gamepad gamepad1, Gamepad gamepad2) {
         driveTrain.teleOp(gamepad1, gamepad2);
         intake.teleOp(gamepad1, gamepad2);
-        //shooter.teleOp(gamepad1, gamepad2);
+        shooter.teleOp(gamepad1, gamepad2);
         wobbleArm.teleOp(gamepad1, gamepad2);
         lift.teleOp(gamepad1, gamepad2);
 
         if(gamepad2.right_stick_y>0.5) {
             stopAim();
         } else if(gamepad2.right_stick_y<-0.5) {
+            aim();
+        }
+
+        if(gamepad2.left_stick_y>0.5) {
+            stopAim();
+        } else if(gamepad2.left_stick_y<-0.5) {
             aim();
         }
 

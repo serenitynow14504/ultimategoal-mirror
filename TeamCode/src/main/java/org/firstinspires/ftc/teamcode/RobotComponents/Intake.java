@@ -13,8 +13,9 @@ public class Intake extends Capability {
     private ExpansionHubMotor intakeWheels;
     private DistanceSensor stuckSensor;
     private final double CURRENT_THRESHOLD = 10;
-    private ElapsedTime stuckTime;
+    private ElapsedTime stuckTime, unStuckTime;
     private boolean on = false;
+    private boolean doneIntaking = true;
 
     public Intake(Robot parent) {
         super(parent);
@@ -24,6 +25,7 @@ public class Intake extends Capability {
         intakeWheels = (ExpansionHubMotor)hardwareMap.get("intake");
         stuckSensor = hardwareMap.get(DistanceSensor.class, "ramp");
         stuckTime = new ElapsedTime();
+        unStuckTime = new ElapsedTime();
     }
 
     public void teleOp(Gamepad gamepad1, Gamepad gamepad2) {
@@ -40,6 +42,7 @@ public class Intake extends Capability {
 
     public void on() {
         intakeWheels.setPower(0.8);
+        doneIntaking = false;
     }
 
     public void full() {
@@ -62,6 +65,10 @@ public class Intake extends Capability {
         return stuckSensor.getDistance(DistanceUnit.MM);
     }
 
+    public boolean doneIntaking() {
+        return doneIntaking;
+    }
+
     private void reTakeRing() {
         off();
         sleep(200);
@@ -80,11 +87,16 @@ public class Intake extends Capability {
         stuckTime.reset();
         while(opModeIsActive()) {
             if(ringStuck()) {
+                doneIntaking = false;
+                unStuckTime.reset();
                 if(stuckTime.milliseconds()>500) {
                     reTakeRing();
                 }
             } else {
                 stuckTime.reset();
+                if(unStuckTime.milliseconds()>1000) {
+                    doneIntaking = true;
+                }
             }
             if (intakeWheels.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.AMPS) > CURRENT_THRESHOLD) {
                 intakeWheels.setPower(0);
