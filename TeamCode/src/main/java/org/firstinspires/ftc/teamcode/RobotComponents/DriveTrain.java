@@ -192,9 +192,9 @@ public class DriveTrain extends Capability {
 
         double turnPower;
         if(gamepad1.right_trigger > 0) {
-            turnPower = gamepad1.right_trigger;
+            turnPower = -gamepad1.right_trigger;
         } else if (gamepad1.left_trigger > 0) {
-            turnPower = -gamepad1.left_trigger;
+            turnPower = gamepad1.left_trigger;
         } else {
             turnPower = 0.0;
         }

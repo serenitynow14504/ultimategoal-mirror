@@ -27,6 +27,7 @@ class TargetPoseController extends MovementController {
         PIDController r = new PIDController(RobotConstants.TRP, RobotConstants.TRI, RobotConstants.TRD);//p = 0.01   d = 0.006
         r.setSetpoint(robot.getTargetRotation());
         r.setOutputRange(0, power);  //-power to power?
+        r.setTolerance(5);
         r.enable();
 
 
@@ -97,7 +98,9 @@ class TargetPoseController extends MovementController {
             VectorD finalGlobalVector = globalFollowVector.added(returnToPath).added(obstacleRepel);
             finalGlobalVector = Utilities.setMagnitude(finalGlobalVector, power * rampDownCoeff);
 
-            robot.driveTrain.setScaledPowersFromGlobalVector(finalGlobalVector, rCorrect);
+            //robot.driveTrain.setScaledPowersFromGlobalVector(finalGlobalVector, rCorrect);
+            robot.driveTrain.powers.setFromGlobalVector(new VectorD(finalGlobalVector.getX(),
+                    finalGlobalVector.getY(), rCorrect), robot.getPose().getZ());
 
             robot.displayDash(path, globalFollowVector.added(Utilities.clipToXY(pos)),
                     globalFollowVector, returnToPath, obstacleRepel, finalGlobalVector,
@@ -116,9 +119,9 @@ class TargetPoseController extends MovementController {
             /*if(timer.milliseconds() > 10000) {
                 robot.getMyOpMode().stop();
             }*/
-        } while(robot.getMyOpMode().opModeIsActive() && distToEnd > 1 && closestPathPointParameter < path.getPathLength());
+        } while(robot.getMyOpMode().opModeIsActive() && ((distToEnd > 1 && closestPathPointParameter < path.getPathLength()) || !r.onTarget()));
 
-        robot.driveTrain.setPowers(0);
+        robot.driveTrain.powers.set(0);
         setProgress(0);
     }
 }
