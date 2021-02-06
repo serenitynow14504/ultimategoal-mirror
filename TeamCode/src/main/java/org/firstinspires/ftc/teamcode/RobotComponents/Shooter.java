@@ -20,6 +20,7 @@ public class Shooter extends Capability {
     private boolean aimDown = false;
 
 
+
     public static double flapDefault = 0.3, flapPos = 0.315, aimDownAmt = 0.0135;
     //flap angle PLANE regression constants (z = ax + by + c)
     public static final double flapRegA = 0.0000828387;
@@ -121,4 +122,5 @@ public class Shooter extends Capability {
             flap(calcFlapPos(aimDown));
         }
     }
+
 }

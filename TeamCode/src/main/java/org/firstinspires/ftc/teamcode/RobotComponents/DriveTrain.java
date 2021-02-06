@@ -21,10 +21,6 @@ public class DriveTrain extends Capability {
 
     //so bobby asks dad, why did you name my brother sunny? Because I like the sun. Then why did you name me Bobby? Because i lIke BoBs
 
-    //PIDController x = new PIDController(0.00015,0.0000004,0.0005);//d = 0.0004
-    //PIDController y = new PIDController(0.0001,0.00000015,0.0005);
-    //PIDController r = new PIDController(0.015,0,0.007);//p = 0.01   d = 0.006
-
     PIDController heading;
     private boolean interrupt = false;
     public WheelPowers powers;
