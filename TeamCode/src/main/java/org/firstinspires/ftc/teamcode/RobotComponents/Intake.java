@@ -15,7 +15,7 @@ public class Intake extends Capability {
     private final double CURRENT_THRESHOLD = 10;
     private ElapsedTime stuckTime, unStuckTime;
     private boolean on = false;
-    private boolean doneIntaking = true;
+    private boolean doneIntaking = true, firstRingSeen = false;
 
     public Intake(Robot parent) {
         super(parent);
@@ -43,6 +43,7 @@ public class Intake extends Capability {
     public void on() {
         intakeWheels.setPower(0.8);
         doneIntaking = false;
+        firstRingSeen = false;
     }
 
     public void full() {
@@ -85,8 +86,10 @@ public class Intake extends Capability {
     @Override
     public void run() {
         stuckTime.reset();
+        unStuckTime.reset();
         while(opModeIsActive()) {
             if(ringStuck()) {
+                firstRingSeen = true;
                 doneIntaking = false;
                 unStuckTime.reset();
                 if(stuckTime.milliseconds()>500) {
@@ -94,7 +97,7 @@ public class Intake extends Capability {
                 }
             } else {
                 stuckTime.reset();
-                if(unStuckTime.milliseconds()>1000) {
+                if(unStuckTime.milliseconds()>1200 && firstRingSeen) {
                     doneIntaking = true;
                 }
             }

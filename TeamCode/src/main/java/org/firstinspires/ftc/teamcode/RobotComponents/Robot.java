@@ -422,7 +422,7 @@ public class Robot {
         VectorD pos = getPosition();
         VectorD delta = targetPos.subtracted(pos);
         VectorD end = Utilities.setMagnitude(delta, delta.magnitude()-posOnRobot.magnitude());
-        VectorD rotClamp = Utilities.setMagnitude(delta, end.magnitude()*0.5);
+        VectorD rotClamp = Utilities.setMagnitude(delta, end.magnitude()*0.35);
         double newHeading = Math.toDegrees(Math.atan2(delta.getY(), delta.getX())) - Math.toDegrees(Math.atan2(posOnRobot.getY(), posOnRobot.getX()));
         VectorD[] points = {getPose(), Utilities.addZ(rotClamp.added(pos), newHeading), Utilities.addZ(end.added(pos), newHeading)};
         followPath2D(points, 0.7);

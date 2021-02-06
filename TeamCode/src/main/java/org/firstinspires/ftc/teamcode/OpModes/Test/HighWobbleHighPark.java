@@ -15,7 +15,7 @@ public class HighWobbleHighPark extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot = new Robot(this, RobotConstants.ALLIANCES.SOLO, FieldConstants.EMPTY_FIELD,
-                72-RobotConstants.width, 0, 0);
+                48, 0, 0);
 
         robot.INIT(hardwareMap, false);
 
@@ -74,7 +74,7 @@ public class HighWobbleHighPark extends LinearOpMode {
         if(stackState == 1) {
             robot.intake.on();
             robot.posOnRobotToGlobalPos(RobotConstants.INTAKE_POS, FieldConstants.RING_STACK);
-            sleep(500);
+            sleep(1000);
             while(!robot.intake.doneIntaking()) {
                 sleep(50);
             }
@@ -84,6 +84,7 @@ public class HighWobbleHighPark extends LinearOpMode {
 
             path = new VectorD[] {
                     robot.getPose(),
+                    new VectorD(48, 60, -1),
                     new VectorD(36, 60, -1)
             };
 
