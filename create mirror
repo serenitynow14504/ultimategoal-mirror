@@ -48,8 +48,13 @@ so that we can be private.
 it's possible to make the upstream of the mirror the FTC one directly and not bother with our fork,
 but haven't tried that.
 
-git remote add upstream https://github.com/serenitynow14504/SkyStone.git
+********** Just do this to rebase: ******* (replace with current project: github.com/First-Tech-Challenge/FTCRobotcontroller/
+git remote add upstream git remote add upstream https://github.com/FIRST-Tech-Challenge/FtcRobotController
 git fetch upstream
 git checkout master
 git rebase upstream/master
 git push
+
+git checkout develop
+git merge master
+// fix any conflicts, do git add, commit etc, then push
