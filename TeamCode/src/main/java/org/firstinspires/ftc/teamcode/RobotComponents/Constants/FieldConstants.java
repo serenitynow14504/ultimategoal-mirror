@@ -37,7 +37,19 @@ public abstract class FieldConstants {
 
     public static final Environment TEST = new Environment(new Obstacle[] {TEST_OBSTACLE});
 
+    public static final Obstacle DEMO_L  = new Obstacle(new VectorD[] {
+            new VectorD(-36, 20),
+            new VectorD(-36, 28),
+            new VectorD(-28, 28),
+            new VectorD(-28, 20)}, 13, maxRepelDist, maxRepelPow);
 
+    public static final Obstacle DEMO_R  = new Obstacle(new VectorD[] {
+            new VectorD(28, 20),
+            new VectorD(28, 28),
+            new VectorD(36, 28),
+            new VectorD(36, 20)}, 13, maxRepelDist, maxRepelPow);
+
+    public static final Environment DEMO = new Environment(new Obstacle[] {DEMO_L});
 
     public static final Environment SKYSTONE_FIELD =
             new Environment(new Obstacle[] {BRIDGE, WALL_PARKED_ROBOT});
@@ -62,9 +74,9 @@ public abstract class FieldConstants {
     public static final VectorD HIGH_GOAL = new VectorD(60, 144, 35.5);
     public static final VectorD LEFT_POWER_SHOT = new VectorD(28.5, 144, 23);
     public static final VectorD MID_POWER_SHOT = new VectorD(36, 144, 23);
-    public static final VectorD RIGHT_POWER_SHOT = new VectorD(43.5, 144, 23);
+    public static final VectorD RIGHT_POWER_SHOT = new VectorD(42, 144, 23);//43.5
 
     public static final VectorD RING_STACK = new VectorD(60, 48);
-    public static final VectorD LEFT_WOBBLE = new VectorD(48, 28);
-    public static final VectorD RIGHT_WOBBLE = new VectorD(72, 28);
+    public static final VectorD LEFT_WOBBLE = new VectorD(48, 24);
+    public static final VectorD RIGHT_WOBBLE = new VectorD(73.5, 24);
 }

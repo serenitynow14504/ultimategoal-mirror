@@ -1,29 +1,27 @@
 package org.firstinspires.ftc.teamcode.RobotComponents;
 
-import android.util.Pair;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Common.PIDController;
-import org.firstinspires.ftc.teamcode.Common.Utilities;
+import org.firstinspires.ftc.teamcode.Common.Util;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Powers.WheelPowers;
 import org.openftc.revextensions2.ExpansionHubMotor;
-
-import androidx.annotation.NonNull;
 
 public class DriveTrain extends Capability {
     private ExpansionHubMotor fRight, bRight, fLeft, bLeft;
 
     //so bobby asks dad, why did you name my brother sunny? Because I like the sun. Then why did you name me Bobby? Because i lIke BoBs
 
-    PIDController heading;
+    public PIDController heading;
     private boolean interrupt = false;
     public WheelPowers powers;
+
+    private boolean fieldCentric = false;
 
     DriveTrain(Robot parent) {
         super(parent);
@@ -62,120 +60,27 @@ public class DriveTrain extends Capability {
 
         heading = new PIDController(RobotConstants.TRP, RobotConstants.TRI, RobotConstants.TRD);
         heading.setSetpoint(parent.getTargetRotation());
-        heading.setOutputRange(0, 0.5);  //-power to power?
+        heading.setInputRange(-180, 180);
+        heading.setOutputRange(0, 0.5);
+        heading.setAbsoluteTolerance(1);
 
         powers = new WheelPowers();
     }
 
-    @Deprecated
-    double[] scalePowers(double[] powers) {
-        double[] newPowers = powers;
-
-        double max = 0;
-        for(int i = 0; i<4; i++) {
-            if(newPowers[i] > max) max = newPowers[i];
-        }
-
-        if(max > 1) {
-            for(int i = 0; i<4; i++) {
-                newPowers[i] /= max;
-            }
-        }
-
-        return newPowers;
+    public void setPowers() {
+        fLeft.setPower(powers.getFL());
+        fRight.setPower(powers.getFR());
+        bLeft.setPower(powers.getBL());
+        bRight.setPower(powers.getBR());
     }
-
-
-    @Deprecated
-    public void setScaledPowersFromGlobalVector(@NonNull VectorD xy, double r) {
-        double robotRot = -Math.toRadians(parent.getPose().getZ());
-        VectorD localVector = new VectorD(
-                (xy.getX() * Math.cos(robotRot) - xy.getY() * Math.sin(robotRot)),
-                (xy.getX() * Math.sin(robotRot) + xy.getY() * Math.cos(robotRot))
-        );
-
-        setScaledPowersFromComponents(localVector.getX(), localVector.getY(), r);
-
-    }
-    @Deprecated
-    public void setScaledPowersFromGlobalVector(@NonNull Pair<VectorD, Double> p) {
-        double robotRot = Math.toRadians(parent.getPose().getZ());
-        VectorD localVector = new VectorD(
-                (p.first.getX() * Math.cos(robotRot) - p.first.getY() * Math.sin(robotRot)),
-                (p.first.getX() * Math.sin(robotRot) + p.first.getY() * Math.cos(robotRot))
-        );
-
-        setScaledPowersFromComponents(localVector.getX(), localVector.get(1), p.second);
-
-    }
-    @Deprecated
-    public void setScaledPowersFromComponents(double xPower, double yPower, double rPower) {
-        double[] powers = new double[] {
-                yPower + xPower - rPower,
-                yPower - xPower + rPower,
-                yPower - xPower - rPower,
-                yPower + xPower + rPower
-        };
-        setPowers(scalePowers(powers));
-    }
-    @Deprecated
-    public void setPowersFromComponents(double xPower, double yPower, double rPower) {
-        double[] powers = new double[] {
-                yPower + xPower - rPower,
-                yPower - xPower + rPower,
-                yPower - xPower - rPower,
-                yPower + xPower + rPower
-        };
-        setPowers(powers);
-    }
-    @Deprecated
-    public void setScaledTankStrafePowers(double l, double r, double strafe) {
-        double[] powers = new double[] {
-                l + strafe,
-                r - strafe,
-                l - strafe,
-                r + strafe
-        };
-        setPowers(scalePowers(powers));
-    }
-    @Deprecated
-    public void setPowers(double speed) {
-        fLeft.setPower(speed);
-        fRight.setPower(speed);
-        bLeft.setPower(speed);
-        bRight.setPower(speed);
-    }
-    @Deprecated
-    public void setPowers(double fl, double fr, double bl, double br) {
-        fLeft.setPower(fl);
-        fRight.setPower(fr);
-        bLeft.setPower(bl);
-        bRight.setPower(br);
-    }
-    @Deprecated
-    public void setPowers(double[] powers) {
-        fLeft.setPower(powers[0]);
-        fRight.setPower(powers[1]);
-        bLeft.setPower(powers[2]);
-        bRight.setPower(powers[3]);
-    }
-    @Deprecated
-    public void setPowers(double l, double r) { //for tank drive
-        fLeft.setPower(l);
-        fRight.setPower(r);
-        bLeft.setPower(l);
-        bRight.setPower(r);
-    }
-
-    void setPowers(WheelPowers wp) {
-        fLeft.setPower(wp.fl);
-        fRight.setPower(wp.fr);
-        bLeft.setPower(wp.bl);
-        bRight.setPower(wp.br);
-    }
-
 
     void teleOp(Gamepad gamepad1, Gamepad gamepad2) {
+        //RobotConstants.SHOOTING_OFFSET_ANGLE = 13.5;
+        if(gamepad1.left_bumper) {
+            fieldCentric = false;
+        } else if(gamepad1.right_bumper) {
+            fieldCentric = true;
+        }
         double coefficient = 0.525;
         if(gamepad1.a) {
             coefficient = 0.3;
@@ -196,27 +101,26 @@ public class DriveTrain extends Capability {
         }
         turnPower *= coefficient * parent.getFront();
 
-        if(parent.autoAim) {
-            powers.setLocalTrans(new VectorD(lateralPower, axialPower));
+        VectorD translate;
+        if(fieldCentric) {
+            translate = new VectorD(axialPower, -lateralPower);
         } else {
-            powers.setFromLocalVector(new VectorD(lateralPower, axialPower, turnPower));
+            translate = new VectorD(lateralPower, axialPower);
         }
 
-        /*double fl = (axialPower + lateralPower);
-        double fr = (axialPower - lateralPower);
-        double bl = (axialPower - lateralPower);
-        double br = (axialPower + lateralPower);
-
-
-        fl += turnPower;
-        fr -= turnPower;
-        bl += turnPower;
-        br -= turnPower;
-
-        fLeft.setPower(parent.getFront() * fl);
-        fRight.setPower(parent.getFront() * fr);
-        bLeft.setPower(parent.getFront() * bl);
-        bRight.setPower(parent.getFront() * br);*/
+        if(parent.isAiming()) {
+            if(fieldCentric) {
+                powers.setGlobalTrans(translate, parent.getPose().getZ());
+            } else {
+                powers.setLocalTrans(translate);
+            }
+        } else {
+            if(fieldCentric) {
+                powers.setFromGlobalVector(Util.addZ(translate, turnPower), parent.getPose().getZ());
+            } else {
+                powers.setFromLocalVector(Util.addZ(translate, turnPower));
+            }
+        }
     }
 
     public void rotate(int degrees, double power, int timeOutMillis) {
@@ -224,20 +128,10 @@ public class DriveTrain extends Capability {
 
         degrees *= -1;
         PIDController pidRotate = new PIDController(RobotConstants.RP, RobotConstants.RI, RobotConstants.RD);
-        // restart imu angle tracking.
-        //parent.imu.resetAngle();
 
         // if degrees > 359 we cap at 359 with same sign as original degrees.
         if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
 
-        // start pid controller. PID controller will monitor the turn angle with respect to the
-        // target angle and reduce power as we approach the target angle. This is to prevent the
-        // robots momentum from overshooting the turn after we turn off the power. The PID controller
-        // reports onTarget() = true when the difference between turn angle and target angle is within
-        // 1% of target (tolerance) which is about 1 degree. This helps prevent overshoot. Overshoot is
-        // dependant on the motor and gearing configuration, starting power, weight of the robot and the
-        // on target tolerance. If the controller overshoots, it will reverse the sign of the output
-        // turning the robot back toward the setpoint value.
 
         pidRotate.reset();
         pidRotate.setSetpoint(degrees + parent.getTargetRotation());
@@ -255,31 +149,25 @@ public class DriveTrain extends Capability {
 
         if (degrees < 0) {
             // On right turn we have to get off zero first.
-            while (opModeIsActive() && parent.imu.getAngle() == 0) {
-                setPowers(power, -power);
+            while (opModeIsActive() && parent.getPose().getZ() == 0) {
+                powers.setTankStrafe(power, -power, 0);
                 sleep(100);
             }
 
             do
             {
-                power = pidRotate.performPID(parent.imu.getAngle()); // power will be - on right turn.
-                setPowers(-power, power);
+                power = pidRotate.performPID(parent.getPose().getZ()); // power will be - on right turn.
+                powers.setTankStrafe(-power, power, 0);
             } while (opModeIsActive() && !pidRotate.onTarget() && timer.milliseconds()<timeOutMillis);
         }
         else    // left turn.
             do
             {
-                power = pidRotate.performPID(parent.imu.getAngle()); // power will be + on left turn.
-                setPowers(-power, power);
+                power = pidRotate.performPID(parent.getPose().getZ()); // power will be + on left turn.
+                powers.setTankStrafe(-power, power, 0);
             } while (opModeIsActive() && !pidRotate.onTarget() && timer.milliseconds()<timeOutMillis);
 
-        setPowers(0);
-
-        //rotation = getAngle();
-
-        // wait for rotation to stop.
-        //parent.getMyOpMode().telemetry.addData("target", parent.getTargetRotation());
-        //parent.getMyOpMode().telemetry.update();
+        powers.set(0);
 
         parent.setTargetRotation(degrees + parent.getTargetRotation());
         sleep(200);
@@ -290,13 +178,14 @@ public class DriveTrain extends Capability {
     public void run() {
         heading.enable();
         while(opModeIsActive() && !isInterrupted()) {
-            if(parent.autoAim) {
-                VectorD vector = Utilities.clipToXY(parent.aimPos).subtracted(parent.getPosition());
-                double ang = Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) - 90 + RobotConstants.SHOOTING_OFFSET_ANGLE;
+            if(parent.isAiming()) {
+                VectorD vector = Util.clipToXY(parent.aimPos).subtracted(parent.getPosition());
+                double ang = Math.toDegrees(Math.atan2(vector.getY(), vector.getX())) - 90 +
+                        RobotConstants.SHOOTING_OFFSET_ANGLE + (Math.round(parent.getPose().getZ()/360) * 360);
                 heading.setSetpoint(ang);
                 powers.setRotation(heading.performPID(parent.getPose().getZ()));
             }
-            setPowers(powers);
+            setPowers();
         }
     }
 }

@@ -80,4 +80,8 @@ public class VectorD extends VectorF {
     {
         subtract((VectorF)subtrahend);
     }
+
+//    public double dotProduct(VectorD other) {
+//        return super.dotProduct(other);
+//    }
 }

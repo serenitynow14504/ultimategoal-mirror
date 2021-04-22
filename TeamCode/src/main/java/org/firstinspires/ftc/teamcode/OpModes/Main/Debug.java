@@ -16,7 +16,7 @@ public class Debug extends LinearOpMode {
     public void runOpMode() {
 
         robot = new Robot(this, RobotConstants.ALLIANCES.SOLO, FieldConstants.EMPTY_FIELD, 0, 0, 0);
-        robot.INIT(hardwareMap, true);
+        robot.init(hardwareMap, true);
 
         waitForStart();
 
@@ -36,7 +36,9 @@ public class Debug extends LinearOpMode {
             } catch (Exception e) {
                 vPdisp = "No Vuforia targets visible";
             }
-            robot.displayDash(new String[] {vPdisp});
+
+            robot.displayDash(new String[] {vPdisp, ""+gamepad1.left_stick_x,
+                    ""+gamepad1.left_stick_y});
             telemetry.update();
         }
     }

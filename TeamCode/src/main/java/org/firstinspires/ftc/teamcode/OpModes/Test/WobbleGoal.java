@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Common.VectorD;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
 @Autonomous
+@Disabled
 public class WobbleGoal extends LinearOpMode {
     Robot robot;
 
@@ -17,7 +19,7 @@ public class WobbleGoal extends LinearOpMode {
         robot = new Robot(this, RobotConstants.ALLIANCES.SOLO, FieldConstants.EMPTY_FIELD,
                 72-RobotConstants.width, 0, 0);
 
-        robot.INIT(hardwareMap, false);
+        robot.init(hardwareMap, false);
 
         while(!isStopRequested() && !opModeIsActive()) {
             robot.detectStack();

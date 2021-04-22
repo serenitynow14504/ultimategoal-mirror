@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode.OpModes.Test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
-import org.firstinspires.ftc.teamcode.RobotComponents.OdometryLocalizer;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
 @Autonomous
+@Disabled
 public class PPControllerTest extends LinearOpMode {
     Robot r;
 
@@ -17,8 +18,7 @@ public class PPControllerTest extends LinearOpMode {
     public void runOpMode() {
         r = new Robot(this, RobotConstants.ALLIANCES.RED, FieldConstants.TEST, 0, 0, 0,
                 true);
-        r.odometry.setMode(OdometryLocalizer.MODES.LINE);
-        r.INIT(hardwareMap, false);
+        r.init(hardwareMap, false);
 
         waitForStart();
 

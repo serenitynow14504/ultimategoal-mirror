@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.Test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -7,7 +8,8 @@ import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
-@TeleOp
+@TeleOp(name="ResetFlap", group="Debug")
+@Disabled
 public class ResetFlap extends LinearOpMode {
     Robot robot;
 
@@ -17,8 +19,8 @@ public class ResetFlap extends LinearOpMode {
                 0, 0,
                 true);
 
-        robot.INIT(hardwareMap, false);
-        robot.shooter.flap(0);
+        robot.init(hardwareMap, false);
+        //robot.shooter.flap(0);
         waitForStart();
 
 

@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.OpModes.Test;
+package org.firstinspires.ftc.teamcode.OpModes.Main;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Common.VectorD;
@@ -8,7 +9,8 @@ import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
 
-@Autonomous
+@Autonomous(name="HighWobbleHighPark", group="_MAIN")
+@Disabled
 public class HighWobbleHighPark extends LinearOpMode {
     Robot robot;
 
@@ -17,7 +19,7 @@ public class HighWobbleHighPark extends LinearOpMode {
         robot = new Robot(this, RobotConstants.ALLIANCES.SOLO, FieldConstants.EMPTY_FIELD,
                 48, 0, 0);
 
-        robot.INIT(hardwareMap, false);
+        robot.init(hardwareMap, false);
 
         robot.wobbleArm.grabber(true);
 
@@ -73,7 +75,7 @@ public class HighWobbleHighPark extends LinearOpMode {
 
         if(stackState == 1) {
             robot.intake.on();
-            robot.posOnRobotToGlobalPos(RobotConstants.INTAKE_POS, FieldConstants.RING_STACK);
+            robot.posOnRobotToGlobalPos(RobotConstants.INTAKE_POS, FieldConstants.RING_STACK, 0.7, 0);
             sleep(1000);
             while(!robot.intake.doneIntaking()) {
                 sleep(50);

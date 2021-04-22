@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.Common.Utilities;
+import org.firstinspires.ftc.teamcode.Common.Util;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 
@@ -114,7 +114,7 @@ public class TFOD {
 
         NewtonRaphsonSolver solver = new NewtonRaphsonSolver();
         double solution = solver.solve(100000000, f, 0, 0.656);
-        VectorD uD = Utilities.setMagnitude(new VectorD(xpp, ypp), solution);
+        VectorD uD = Util.setMagnitude(new VectorD(xpp, ypp), solution);
         double xp = uD.getX();
         double yp = uD.getY();
 

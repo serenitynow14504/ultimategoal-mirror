@@ -6,15 +6,34 @@ import org.apache.commons.math3.linear.DecompositionSolver;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
-import org.firstinspires.ftc.teamcode.Common.Utilities;
+import org.firstinspires.ftc.teamcode.Common.Util;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
+import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 
 public class WheelPowers {
 
-    public double fl = 0;//y+x-r
-    public double fr = 0;//y-x+r
-    public double bl = 0;//y-x-r
-    public double br = 0;//y+x+r
+    private double fl = 0, fls = 0;//y+x-r
+    private double fr = 0, frs = 0;//y-x+r
+    private double bl = 0, bls = 0;//y-x-r
+    private double br = 0, brs = 0;//y+x+r
+
+    private double kS = 0;
+
+    public double getFL() {
+        return fls;
+    }
+    public double getFR() {
+        return frs;
+    }
+    public double getBL() {
+        return bls;
+    }
+    public double getBR() {
+        return brs;
+    }
+    public double getKS() {
+        return kS;
+    }
 
     public void set(double fl, double fr, double bl, double br) {
         this.fl = fl;
@@ -23,14 +42,26 @@ public class WheelPowers {
         this.br = br;
 
         scale();
+
+        VectorD v = Util.normalize(Util.abs(getLocalVector()));
+        kS = v.dotProduct(RobotConstants.KStatics);
+
+        fls = applyStatic(fl, kS);
+        frs = applyStatic(fr, kS);
+        bls = applyStatic(bl, kS);
+        brs = applyStatic(br, kS);
+    }
+
+    private double applyStatic(double p, double kStatic) {
+        return Math.signum(p)*(kStatic + Math.abs(p)*(1-kStatic));
     }
 
     public void set(double p) {
         set(p, p, p, p);
     }
 
-    public void set(double l, double r) {
-        set(l, r, l, r);
+    public void setTankStrafe(double l, double r, double s) {
+        set(l+s, r-s, l-s, r+s);
     }
 
     public void scale() {
@@ -49,7 +80,7 @@ public class WheelPowers {
     }
 
     public void setGlobalTrans(VectorD v, double robotRotDegrees) {
-        setLocalTrans(Utilities.rotate(v, -Math.toRadians(robotRotDegrees)));
+        setLocalTrans(Util.rotate(v, -Math.toRadians(robotRotDegrees)));
     }
 
     public void setRotation(double r) {
@@ -65,7 +96,7 @@ public class WheelPowers {
     }
 
     public void setFromGlobalVector(VectorD v, double robotRotDegrees) {
-        VectorD rotated = Utilities.rotate(v, -Math.toRadians(robotRotDegrees));
+        VectorD rotated = Util.rotate(v, -Math.toRadians(robotRotDegrees));
         setFromLocalVector(new VectorD(rotated.getX(), rotated.getY(), v.getZ()));
     }
 

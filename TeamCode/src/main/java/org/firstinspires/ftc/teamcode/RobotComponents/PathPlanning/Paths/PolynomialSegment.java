@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.RobotComponents.PathPlanning.Paths;
 
-import org.firstinspires.ftc.teamcode.Common.Polynomial;
+import org.firstinspires.ftc.teamcode.Common.QPolynomial;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
-import static  org.firstinspires.ftc.teamcode.Common.Utilities.*;
+import static org.firstinspires.ftc.teamcode.Common.Util.*;
 
 
 class PolynomialSegment {
     VectorD start, end, sHandle, eHandle;
     boolean created = false;
-    Polynomial x, y;
+    QPolynomial x, y;
     public PolynomialSegment(VectorD start, VectorD sHandle, VectorD end, VectorD eHandle) {
         this.start = start;
         this.end = end;
@@ -16,9 +16,9 @@ class PolynomialSegment {
         this.eHandle = eHandle;
 
         double dist = distance(start, end);
-        x = new Polynomial(new VectorD(0, start.getX()), normalize(sHandle).multiplied(dist).getX(), 0,
+        x = new QPolynomial(new VectorD(0, start.getX()), normalize(sHandle).multiplied(dist).getX(), 0,
                 new VectorD(1, end.getX()), normalize(eHandle).multiplied(dist).getX(), 0);
-        y = new Polynomial(new VectorD(0, start.getY()), normalize(sHandle).multiplied(dist).getY(), 0,
+        y = new QPolynomial(new VectorD(0, start.getY()), normalize(sHandle).multiplied(dist).getY(), 0,
                 new VectorD(1, end.getY()), normalize(eHandle).multiplied(dist).getY(), 0);
         created = true;
     }
@@ -33,9 +33,9 @@ class PolynomialSegment {
         if(created) return;
 
         double dist = distance(start, end);
-        x = new Polynomial(new VectorD(0, start.getX()), normalize(sHandle).multiplied(dist).getX(), 0,
+        x = new QPolynomial(new VectorD(0, start.getX()), normalize(sHandle).multiplied(dist).getX(), 0,
                 new VectorD(1, end.getX()), normalize(eHandle).multiplied(dist).getX(), 0);
-        y = new Polynomial(new VectorD(0, start.getY()), normalize(sHandle).multiplied(dist).getY(), 0,
+        y = new QPolynomial(new VectorD(0, start.getY()), normalize(sHandle).multiplied(dist).getY(), 0,
                 new VectorD(1, end.getY()), normalize(eHandle).multiplied(dist).getY(), 0);
         created = true;
     }

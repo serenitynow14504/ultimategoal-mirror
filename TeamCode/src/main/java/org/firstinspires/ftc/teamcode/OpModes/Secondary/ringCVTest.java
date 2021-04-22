@@ -46,7 +46,7 @@ public class ringCVTest extends LinearOpMode
     @Override
     public void runOpMode()
     {
-        robot.INIT(hardwareMap, false);
+        robot.init(hardwareMap, false);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);

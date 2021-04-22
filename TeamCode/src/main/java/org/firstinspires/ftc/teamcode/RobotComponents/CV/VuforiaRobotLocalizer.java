@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.Common.Util;
 import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 
@@ -128,7 +129,8 @@ public class VuforiaRobotLocalizer {
         // in front of robot-center
         final float CAMERA_VERTICAL_DISPLACEMENT = (float)RobotConstants.CAMERA_POS.getZ() * mmPerInch;   // eg: Camera is 8 Inches
         // above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = (float)RobotConstants.CAMERA_POS.getX();     // eg: Camera is ON the robot's center line
+        final float CAMERA_LEFT_DISPLACEMENT     = (float)-RobotConstants.CAMERA_POS.getX() * mmPerInch;
+        // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -173,8 +175,11 @@ public class VuforiaRobotLocalizer {
             Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
             //telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f",
             //        rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+            //Util.log(Util.rotate(RobotConstants.CAMERA_POS, rotation.thirdAngle - 90).toString());
             return new VectorD(24 - (translation.get(1) / mmPerInch),
-                    (translation.get(0) / mmPerInch) + 72, rotation.thirdAngle);
+                    (translation.get(0) / mmPerInch) + 72, rotation.thirdAngle - 90).subtracted(Util.addZ(Util.rotate(RobotConstants.CAMERA_POS, Math.toRadians(rotation.thirdAngle - 90)), 0));
+//            Util.log(raw.toString());
+//            return raw;
         }
         else {
             throw new Exception("no targets visible");
