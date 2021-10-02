@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Common.VectorD;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotComponents.Robot;
-
+//i love everyone equally
 @Autonomous(name="HighWobbleHighPark", group="_MAIN")
 @Disabled
 public class HighWobbleHighPark extends LinearOpMode {
