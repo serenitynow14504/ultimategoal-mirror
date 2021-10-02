@@ -17,9 +17,7 @@ public class Debug extends LinearOpMode {
 
         robot = new Robot(this, RobotConstants.ALLIANCES.SOLO, FieldConstants.EMPTY_FIELD, 0, 0, 0);
         robot.init(hardwareMap, true);
-
         waitForStart();
-
         robot.begin();
 
         while(opModeIsActive()) {
