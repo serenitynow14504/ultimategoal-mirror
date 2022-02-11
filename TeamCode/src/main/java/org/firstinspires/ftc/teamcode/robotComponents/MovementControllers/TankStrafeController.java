@@ -1,0 +1,231 @@
+package org.firstinspires.ftc.teamcode.robotComponents.MovementControllers;
+
+import android.util.Pair;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.common.Line;
+import org.firstinspires.ftc.teamcode.common.PIDController;
+import org.firstinspires.ftc.teamcode.common.Util;
+import org.firstinspires.ftc.teamcode.common.VectorD;
+import org.firstinspires.ftc.teamcode.robotComponents.Robot;
+
+import java.util.HashMap;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.tan;
+import static java.lang.Math.toRadians;
+import static org.firstinspires.ftc.teamcode.common.Util.log;
+import static org.firstinspires.ftc.teamcode.robotComponents.Constants.RobotConstants.CENTER_TO_WHEEL_DIST;
+
+
+public class TankStrafeController extends MovementController {
+
+    public TankStrafeController(Robot r) {
+        super(r.driveTrain.powers, r);
+    }
+
+
+    public void followPath(double power, long timeout) {
+
+        timer = new ElapsedTime();
+
+
+        /*PIDController rPID = new PIDController(RobotConstants.TRP, RobotConstants.TRI, RobotConstants.TRD);
+        rPID.setSetpoint(robot.getTargetRotation());
+        rPID.setOutputRange(0, power);  //-power to power?
+        rPID.enable();*/
+
+
+        PIDController toPathPID = new PIDController(0.01, 0, 0);
+        toPathPID.setSetpoint(0);
+        toPathPID.setOutputRange(0, 144);
+        toPathPID.setWindowing(40);
+        toPathPID.enable();
+
+        double distToEnd, rampDownDist = -1, rampDownTo = 0.35;
+        double closestPathPointParameter;
+        timer.reset();
+        do {
+            VectorD pos = robot.getPose();
+
+            path.calculateClosestData(pos);
+
+            closestPathPointParameter = path.closestParameter();
+
+            double lookAhead = 16d;///(path.getClosestDist()/64.0 + 1.0);
+
+            setProgress(closestPathPointParameter/path.getPathLength());
+
+            lookAhead += closestPathPointParameter;
+
+            VectorD lookAheadPoint = path.pointFromParameter(lookAhead);
+            //VectorD globalFollowVector = lookAheadPoint.subtracted(Utilities.clipToXY(pos));
+            Pair<Double, VectorD> r = turnPower(pos, lookAheadPoint, power);
+            Pair<double[], VectorD> r2 = turnPower2(pos, lookAheadPoint, power);
+
+
+            //Return to Path Correction
+            //toNearestPoint = Utilities.clipToXY(pos).subtracted(path.pointFromParameter(closestPathPointParameter));
+            double x = toPathPID.performPID(path.getNormalError()) * path.getLeftRight();
+            //VECTOR 2!
+
+
+            //Obstacle Repulsion Vector
+            VectorD obstacleRepel = robot.getEnvironmentRepulsionVector();
+
+
+
+            distToEnd = Util.distance(path.getLastPoint(), pos);
+
+            if(lookAhead >= path.getPathLength() - 5 && rampDownDist == -1) {
+                rampDownDist = distToEnd;
+            }
+
+            double rampDownCoeff = 1;
+            if(rampDownDist != -1) {
+                rampDownCoeff = (1-rampDownTo)*distToEnd/rampDownDist + rampDownTo;
+            }
+
+
+
+
+            //robot.driveTrain.setScaledPowersFromComponents(0, power*rampDownCoeff, r.first);
+            //robot.driveTrain.setScaledTankStrafePowers(r2.first[0]*rampDownCoeff,
+            //        r2.first[1]*rampDownCoeff, x);
+            robot.driveTrain.powers.setTankStrafe(r2.first[0]*rampDownCoeff,
+                    r2.first[1]*rampDownCoeff, x);
+
+
+            HashMap<String, Double> values = new HashMap<>();
+            values.put("radius", Util.distance(pos, r.second));
+            values.put("turnPower", r2.first[0]-r2.first[1]);
+
+            log("turnPower " + (r2.first[0]-r2.first[1]));
+            log("");
+
+            //robot.displayDash(path, lookAheadPoint, r.second, x, values);
+
+            if(robot.driveTrain.isDtInterrupted()) {
+                robot.driveTrain.resetInterrupt();
+                break;
+            }
+
+        } while(robot.getMyOpMode().opModeIsActive() && distToEnd > 1 && closestPathPointParameter < path.getPathLength());
+
+        robot.driveTrain.powers.set(0);
+        setProgress(0);
+    }
+
+    @Override
+    protected void doTick(VectorD pose, TelemetryPacket packet) {
+        
+    }
+
+    @Override
+    protected void doInit() {
+
+    }
+
+    @Override
+    protected void doFinish() {
+
+    }
+
+    @Override
+    protected boolean shouldExit(VectorD pose) {
+        return false;
+    }
+
+    private Pair<Double, VectorD> turnPower(VectorD pos, VectorD point, double forwardPower) {
+        VectorD relativePoint = point.subtracted(Util.clipToXY(pos));
+        double centralAngleRadians = Math.PI - 2d * (atan2(relativePoint.get(1),
+                relativePoint.get(0))-pos.get(2));
+        double curvature;
+        if(centralAngleRadians == 0) {
+            curvature = 0.0;
+        } else {
+            double radius =
+                    relativePoint.magnitude() / (Math.sqrt(2d - 2d * Math.cos(centralAngleRadians)));
+            curvature = 1d / abs(Math.pow(radius, 1d/4d));
+            log("radius " + radius);
+        }
+        Line toPoint = new Line(Util.clipToXY(pos), point, -1);
+        Line perp = toPoint.perpLine(Util.clipToXY(pos).added(point).multiplied(0.5));
+
+        Line robotSide = new Line(Util.clipToXY(pos), tan(Math.toRadians(pos.get(2))));
+
+        VectorD center = perp.intersect(robotSide);
+
+
+        Line forward = new Line(Util.clipToXY(pos), tan(Math.toRadians(pos.get(2)) + Math.PI/2));
+        curvature *= -forward.calculateLeftRight(point);
+
+        curvature *= forwardPower;
+
+
+        /*Utilities.log(Utilities.distance(Utilities.clipToXY(pos), center));
+        Utilities.log(Utilities.distance(point, center));
+        Utilities.log("");*/
+        //Utilities.log(curvature);
+
+
+
+
+        return new Pair<>(curvature, center);
+    }
+
+
+    private Pair<double[], VectorD> turnPower2(VectorD pos, VectorD point, double forwardPower) {
+        VectorD relativePoint = point.subtracted(Util.clipToXY(pos));
+        double centralAngleRadians = abs(Math.PI - 2d * (atan2(relativePoint.get(1),
+                relativePoint.get(0))-pos.get(2)));
+
+
+        Line toPoint = new Line(Util.clipToXY(pos), point, -1);
+        Line perp = toPoint.perpLine(Util.clipToXY(pos).added(point).multiplied(0.5));
+
+        Line robotSide = new Line(Util.clipToXY(pos), tan(Math.toRadians(pos.get(2))));
+
+        VectorD center = perp.intersect(robotSide);
+
+
+        double rot = toRadians(pos.get(2));
+        VectorD forwardPoint = new VectorD(pos.get(0) + 20f * (float)cos(rot + Math.PI/2),
+                pos.get(1) + 20f * (float)sin(rot + Math.PI/2));
+        Line forward = new Line(Util.clipToXY(pos), forwardPoint, 0);
+
+        double radius, lPow, rPow;
+        int leftRight = -forward.calculateLeftRight(Util.clipToXY(point));
+        log("leftright = " + leftRight);
+
+        if(centralAngleRadians == 0) {
+            lPow = forwardPower;
+            rPow = forwardPower;
+        } else {
+            radius = relativePoint.magnitude() / (Math.sqrt(2d - 2d * Math.cos(centralAngleRadians)));
+            log("radius " + radius);
+
+            double magnifyConstant = 1.4;
+            lPow = (radius + CENTER_TO_WHEEL_DIST*leftRight*magnifyConstant) * centralAngleRadians;
+            rPow = (radius - CENTER_TO_WHEEL_DIST*leftRight*magnifyConstant) * centralAngleRadians;
+
+            double cPow = (lPow+rPow)/2;
+            double scaleFactor = forwardPower/cPow;
+
+            lPow *= scaleFactor;
+            rPow *= scaleFactor;
+        }
+        /*Utilities.log(Utilities.distance(Utilities.clipToXY(pos), center));
+        Utilities.log(Utilities.distance(point, center));
+        Utilities.log("");*/
+        //Utilities.log(curvature);
+
+        return new Pair<>(new double[] {lPow, rPow}, center);
+    }
+
+}
